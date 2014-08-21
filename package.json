@@ -1,0 +1,31 @@
+{
+  "name": "statehood",
+  "description": "HTTP State Management Utilities",
+  "version": "1.0.0",
+  "repository": "git://github.com/hapijs/statehood",
+  "main": "index",
+  "keywords": [
+    "HTTP",
+    "state",
+    "cookies",
+    "secure"
+  ],
+  "engines": {
+    "node": ">=0.10.30"
+  },
+  "dependencies": {
+      "hoek": "2.x.x"
+  },
+  "devDependencies": {
+    "lab": "4.x.x"
+  },
+  "scripts": {
+    "test": "make test-cov"
+  },
+  "licenses": [
+    {
+      "type": "BSD",
+      "url": "http://github.com/hapijs/statehood/raw/master/LICENSE"
+    }
+  ]
+}

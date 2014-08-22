@@ -14,7 +14,11 @@
     "node": ">=0.10.30"
   },
   "dependencies": {
-      "hoek": "2.x.x"
+      "hoek": "2.x.x",
+      "boom": "2.x.x",
+      "items": "1.x.x",
+      "cryptiles": "2.x.x",
+      "iron": "2.x.x"
   },
   "devDependencies": {
     "lab": "4.x.x"

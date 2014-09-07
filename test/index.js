@@ -85,6 +85,14 @@ describe('Statehood', function () {
                 });
                 done();
             });
+
+            it('records name', function (done) {
+
+                var definitions = new Statehood.Definitions();
+                definitions.add('test');
+                expect(definitions.names).to.deep.equal(['test']);
+                done();
+            });
         });
     });
 

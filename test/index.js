@@ -1074,4 +1074,31 @@ describe('Statehood', function () {
             done();
         });
     });
+
+    describe('#exclude', function () {
+
+        it('returns all keys', function (done) {
+
+            var header = 'a=4;b=5;c=6';
+            var result = Statehood.exclude(header, []);
+            expect(result).to.equal(header);
+            done();
+        });
+
+        it('returns keys without excluded', function (done) {
+
+            var header = 'a=4;b=5;c=6';
+            var result = Statehood.exclude(header, ['b']);
+            expect(result).to.equal('a=4;c=6');
+            done();
+        });
+
+        it('returns error on invalid header', function (done) {
+
+            var header = 'a';
+            var result = Statehood.exclude(header, ['b']);
+            expect(result.message).to.equal('Bad cookie header');
+            done();
+        });
+    });
 });

@@ -1,10 +1,11 @@
 
 // Load modules
 
-var Lab = require('lab');
-var Iron = require('iron');
-var Hoek = require('hoek');
+var Code = require('code');
 var Cryptiles = require('cryptiles');
+var Hoek = require('hoek');
+var Iron = require('iron');
+var Lab = require('lab');
 var Statehood = require('../');
 
 
@@ -18,40 +19,10 @@ var internals = {};
 var lab = exports.lab = Lab.script();
 var describe = lab.describe;
 var it = lab.it;
-var expect = Lab.expect;
+var expect = Code.expect;
 
 
 describe('Definitions', function () {
-
-    it('generates with defaults', function (done) {
-
-        var definitions = new Statehood.Definitions();
-        expect(definitions.settings).to.deep.equal({
-            strictHeader: true,
-            failAction: 'error'
-        });
-        done();
-    });
-
-    it('overrides failAction', function (done) {
-
-        var definitions = new Statehood.Definitions({ failAction: 'ignore' });
-        expect(definitions.settings).to.deep.equal({
-            strictHeader: true,
-            failAction: 'ignore'
-        });
-        done();
-    });
-
-    it('overrides strictHeader', function (done) {
-
-        var definitions = new Statehood.Definitions({ strictHeader: false });
-        expect(definitions.settings).to.deep.equal({
-            strictHeader: false,
-            failAction: 'error'
-        });
-        done();
-    });
 
     describe('add()', function () {
 
@@ -71,7 +42,7 @@ describe('Definitions', function () {
             definitions.add('test');
             expect(definitions.cookies.test).to.deep.equal({
                 strictHeader: true,
-                failAction: 'error',
+                ignoreErrors: false,
                 isSecure: false,
                 isHttpOnly: false,
                 path: null,
@@ -97,9 +68,10 @@ describe('parse()', function () {
     it('parses cookie', function (done) {
 
         var definitions = new Statehood.Definitions();
-        Statehood.parse('a=b', definitions, function (err, states, invalids) {
+        Statehood.parse('a=b', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ a: 'b' });
             done();
         });
@@ -108,9 +80,10 @@ describe('parse()', function () {
     it('parses cookie (loose)', function (done) {
 
         var definitions = new Statehood.Definitions({ strictHeader: false });
-        Statehood.parse('a="1; b="2"; c=3; d[1]=4', definitions, function (err, states, invalids) {
+        Statehood.parse('a="1; b="2"; c=3; d[1]=4', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ a: '"1', b: '2', c: '3', 'd[1]': '4' });
             done();
         });
@@ -119,9 +92,10 @@ describe('parse()', function () {
     it('parses cookie (empty)', function (done) {
 
         var definitions = new Statehood.Definitions();
-        Statehood.parse('a=', definitions, function (err, states, invalids) {
+        Statehood.parse('a=', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ a: '' });
             done();
         });
@@ -130,9 +104,10 @@ describe('parse()', function () {
     it('parses cookie (quoted empty)', function (done) {
 
         var definitions = new Statehood.Definitions();
-        Statehood.parse('a=""', definitions, function (err, states, invalids) {
+        Statehood.parse('a=""', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ a: '' });
             done();
         });
@@ -141,9 +116,10 @@ describe('parse()', function () {
     it('parses cookie (semicolon single)', function (done) {
 
         var definitions = new Statehood.Definitions();
-        Statehood.parse('a=;', definitions, function (err, states, invalids) {
+        Statehood.parse('a=;', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ a: '' });
             done();
         });
@@ -152,9 +128,10 @@ describe('parse()', function () {
     it('parses cookie (number)', function (done) {
 
         var definitions = new Statehood.Definitions();
-        Statehood.parse('a=23', definitions, function (err, states, invalids) {
+        Statehood.parse('a=23', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ a: '23' });
             done();
         });
@@ -163,9 +140,10 @@ describe('parse()', function () {
     it('parses cookie (array)', function (done) {
 
         var definitions = new Statehood.Definitions();
-        Statehood.parse('a=1; a=2', definitions, function (err, states, invalids) {
+        Statehood.parse('a=1; a=2', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ a: ['1', '2'] });
             done();
         });
@@ -174,9 +152,10 @@ describe('parse()', function () {
     it('parses cookie (mixed style array)', function (done) {
 
         var definitions = new Statehood.Definitions();
-        Statehood.parse('a=1; b="2"; c=3', definitions, function (err, states, invalids) {
+        Statehood.parse('a=1; b="2"; c=3', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ a: '1', b: '2', c: '3' });
             done();
         });
@@ -185,9 +164,10 @@ describe('parse()', function () {
     it('parses cookie (mixed style array quoted first)', function (done) {
 
         var definitions = new Statehood.Definitions();
-        Statehood.parse('a="1"; b="2"; c=3', definitions, function (err, states, invalids) {
+        Statehood.parse('a="1"; b="2"; c=3', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ a: '1', b: '2', c: '3' });
             done();
         });
@@ -196,9 +176,10 @@ describe('parse()', function () {
     it('parses cookie (white space)', function (done) {
 
         var definitions = new Statehood.Definitions();
-        Statehood.parse('A    = b;   b  =   c', definitions, function (err, states, invalids) {
+        Statehood.parse('A    = b;   b  =   c', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ A: 'b', b: 'c' });
             done();
         });
@@ -207,9 +188,10 @@ describe('parse()', function () {
     it('parses cookie (raw form)', function (done) {
 
         var definitions = new Statehood.Definitions();
-        Statehood.parse('a="b=123456789&c=something"', definitions, function (err, states, invalids) {
+        Statehood.parse('a="b=123456789&c=something"', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ a: 'b=123456789&c=something' });
             done();
         });
@@ -218,9 +200,10 @@ describe('parse()', function () {
     it('parses cookie (raw percent)', function (done) {
 
         var definitions = new Statehood.Definitions();
-        Statehood.parse('a=%1;b=x', definitions, function (err, states, invalids) {
+        Statehood.parse('a=%1;b=x', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ a: '%1', b: 'x' });
             done();
         });
@@ -229,9 +212,10 @@ describe('parse()', function () {
     it('parses cookie (raw encoded)', function (done) {
 
         var definitions = new Statehood.Definitions();
-        Statehood.parse('z=%20%22%2c%3b%2f', definitions, function (err, states, invalids) {
+        Statehood.parse('z=%20%22%2c%3b%2f', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ z: '%20%22%2c%3b%2f' });
             done();
         });
@@ -241,9 +225,10 @@ describe('parse()', function () {
 
         var definitions = new Statehood.Definitions();
         definitions.add('a', { encoding: 'form' });
-        Statehood.parse('a="b=%p123456789"', definitions, function (err, states, invalids) {
+        Statehood.parse('a="b=%p123456789"', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ a: { b: '%p123456789' } });
             done();
         });
@@ -253,9 +238,10 @@ describe('parse()', function () {
 
         var definitions = new Statehood.Definitions();
         definitions.add('a', { encoding: 'form' });
-        Statehood.parse('a="b=123456789&c=something%20else"', definitions, function (err, states, invalids) {
+        Statehood.parse('a="b=123456789&c=something%20else"', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ a: { b: '123456789', c: 'something else' } });
             done();
         });
@@ -265,9 +251,10 @@ describe('parse()', function () {
 
         var definitions = new Statehood.Definitions();
         definitions.add('a', { encoding: 'base64' });
-        Statehood.parse('a=dGVzdA; a=dGVzdA', definitions, function (err, states, invalids) {
+        Statehood.parse('a=dGVzdA; a=dGVzdA', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ a: ['test', 'test'] });
             done();
         });
@@ -277,9 +264,10 @@ describe('parse()', function () {
 
         var definitions = new Statehood.Definitions();
         definitions.add('a', { encoding: 'base64' });
-        Statehood.parse('a=dGVzdA; a=dGVzdA; a=dGVzdA', definitions, function (err, states, invalids) {
+        Statehood.parse('a=dGVzdA; a=dGVzdA; a=dGVzdA', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ a: ['test', 'test', 'test'] });
             done();
         });
@@ -289,9 +277,10 @@ describe('parse()', function () {
 
         var definitions = new Statehood.Definitions();
         definitions.add('key', { encoding: 'base64' });
-        Statehood.parse('key=dGVzdA==', definitions, function (err, states, invalids) {
+        Statehood.parse('key=dGVzdA==', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ key: 'test' });
             done();
         });
@@ -301,9 +290,10 @@ describe('parse()', function () {
 
         var definitions = new Statehood.Definitions();
         definitions.add('key', { encoding: 'base64' });
-        Statehood.parse('key=dGVzdA', definitions, function (err, states, invalids) {
+        Statehood.parse('key=dGVzdA', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ key: 'test' });
             done();
         });
@@ -313,9 +303,10 @@ describe('parse()', function () {
 
         var definitions = new Statehood.Definitions();
         definitions.add('key', { encoding: 'none' });
-        Statehood.parse('key=dGVzdA', definitions, function (err, states, invalids) {
+        Statehood.parse('key=dGVzdA', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ key: 'dGVzdA' });
             done();
         });
@@ -325,9 +316,10 @@ describe('parse()', function () {
 
         var definitions = new Statehood.Definitions();
         definitions.add('key', { encoding: 'base64json' });
-        Statehood.parse('key=eyJ0ZXN0aW5nIjoianNvbiJ9', definitions, function (err, states, invalids) {
+        Statehood.parse('key=eyJ0ZXN0aW5nIjoianNvbiJ9', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ key: { testing: 'json' } });
             done();
         });
@@ -337,9 +329,10 @@ describe('parse()', function () {
 
         var definitions = new Statehood.Definitions();
         definitions.add('key', { encoding: 'iron', password: 'password' });
-        Statehood.parse('key=Fe26.2**f3fc42242467f7a97c042be866a32c1e7645045c2cc085124eadc66d25fc8395*URXpH8k-R0d4O5bnY23fRQ*uq9rd8ZzdjZqUrq9P2Ci0yZ-EEUikGzxTLn6QTcJ0bc**3880c0ac8bab054f529afec8660ebbbbc8050e192e39e5d622e7ac312b9860d0*r_g7N9kJYqXDrFlvOnuKpfpEWwrJLOKMXEI43LAGeFg', definitions, function (err, states, invalids) {
+        Statehood.parse('key=Fe26.2**f3fc42242467f7a97c042be866a32c1e7645045c2cc085124eadc66d25fc8395*URXpH8k-R0d4O5bnY23fRQ*uq9rd8ZzdjZqUrq9P2Ci0yZ-EEUikGzxTLn6QTcJ0bc**3880c0ac8bab054f529afec8660ebbbbc8050e192e39e5d622e7ac312b9860d0*r_g7N9kJYqXDrFlvOnuKpfpEWwrJLOKMXEI43LAGeFg', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ key: { a: 1, b: 2, c: 3 } });
             done();
         });
@@ -349,9 +342,10 @@ describe('parse()', function () {
 
         var definitions = new Statehood.Definitions();
         definitions.add('key', { encoding: 'iron', password: 'password', iron: Iron.defaults });
-        Statehood.parse('key=Fe26.2**f3fc42242467f7a97c042be866a32c1e7645045c2cc085124eadc66d25fc8395*URXpH8k-R0d4O5bnY23fRQ*uq9rd8ZzdjZqUrq9P2Ci0yZ-EEUikGzxTLn6QTcJ0bc**3880c0ac8bab054f529afec8660ebbbbc8050e192e39e5d622e7ac312b9860d0*r_g7N9kJYqXDrFlvOnuKpfpEWwrJLOKMXEI43LAGeFg', definitions, function (err, states, invalids) {
+        Statehood.parse('key=Fe26.2**f3fc42242467f7a97c042be866a32c1e7645045c2cc085124eadc66d25fc8395*URXpH8k-R0d4O5bnY23fRQ*uq9rd8ZzdjZqUrq9P2Ci0yZ-EEUikGzxTLn6QTcJ0bc**3880c0ac8bab054f529afec8660ebbbbc8050e192e39e5d622e7ac312b9860d0*r_g7N9kJYqXDrFlvOnuKpfpEWwrJLOKMXEI43LAGeFg', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ key: { a: 1, b: 2, c: 3 } });
             done();
         });
@@ -361,9 +355,10 @@ describe('parse()', function () {
 
         var definitions = new Statehood.Definitions();
         definitions.add('sid', { encoding: 'form', sign: { password: 'password' } });
-        Statehood.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*xGhc6WvkE55V-TzucCl0NVFmbijeCwgs5Hf5tAVbSUo', definitions, function (err, states, invalids) {
+        Statehood.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*xGhc6WvkE55V-TzucCl0NVFmbijeCwgs5Hf5tAVbSUo', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ sid: { a: '1', b: '2', c: '3 x' } });
             done();
         });
@@ -373,9 +368,10 @@ describe('parse()', function () {
 
         var definitions = new Statehood.Definitions();
         definitions.add('sid', { encoding: 'form', sign: { password: 'password', integrity: Iron.defaults.integrity } });
-        Statehood.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*xGhc6WvkE55V-TzucCl0NVFmbijeCwgs5Hf5tAVbSUo', definitions, function (err, states, invalids) {
+        Statehood.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*xGhc6WvkE55V-TzucCl0NVFmbijeCwgs5Hf5tAVbSUo', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ sid: { a: '1', b: '2', c: '3 x' } });
             done();
         });
@@ -385,9 +381,10 @@ describe('parse()', function () {
 
         var definitions = new Statehood.Definitions();
         definitions.add('a', { strictHeader: false });
-        Statehood.parse('a="1', definitions, function (err, states, invalids) {
+        Statehood.parse('a="1', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
+            expect(failed).to.have.length(0);
             expect(states).to.deep.equal({ a: '"1' });
             done();
         });
@@ -396,11 +393,12 @@ describe('parse()', function () {
     it('fails parsing cookie (mismatching quotes)', function (done) {
 
         var definitions = new Statehood.Definitions();
-        Statehood.parse('a="1; b="2"; c=3', definitions, function (err, states, invalids) {
+        Statehood.parse('a="1; b="2"; c=3', definitions, function (err, states, failed) {
 
-            expect(err).to.exist;
-            expect(invalids).to.deep.equal({
-                a: {
+            expect(err).to.exist();
+            expect(err.data).to.deep.equal([
+                {
+                    name: 'a',
                     value: '"1',
                     settings: {
                         isSecure: false,
@@ -410,23 +408,27 @@ describe('parse()', function () {
                         ttl: null,
                         encoding: 'none',
                         strictHeader: true,
-                        failAction: 'error'
+                        ignoreErrors: false
                     },
                     reason: 'Invalid cookie value'
                 }
-            });
+            ]);
+
+            expect(failed).to.deep.equal(err.data);
+
             done();
         });
     });
 
     it('ignores failed parsing cookie (mismatching quotes)', function (done) {
 
-        var definitions = new Statehood.Definitions({ failAction: 'ignore' });
-        Statehood.parse('a="1; b="2"; c=3', definitions, function (err, states, invalids) {
+        var definitions = new Statehood.Definitions({ ignoreErrors: true });
+        Statehood.parse('a="1; b="2"; c=3', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
-            expect(invalids).to.deep.equal({
-                a: {
+            expect(err).to.not.exist();
+            expect(failed).to.deep.equal([
+                {
+                    name: 'a',
                     value: '"1',
                     settings: {
                         isSecure: false,
@@ -436,11 +438,11 @@ describe('parse()', function () {
                         ttl: null,
                         encoding: 'none',
                         strictHeader: true,
-                        failAction: 'ignore'
+                        ignoreErrors: true
                     },
                     reason: 'Invalid cookie value'
                 }
-            });
+            ]);
             done();
         });
     });
@@ -448,10 +450,10 @@ describe('parse()', function () {
     it('ignores failed parsing cookie (cookie settings)', function (done) {
 
         var definitions = new Statehood.Definitions();
-        definitions.add('a', { failAction: 'ignore' });
-        Statehood.parse('a="1', definitions, function (err, states, invalids) {
+        definitions.add('a', { ignoreErrors: true });
+        Statehood.parse('a="1', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             done();
         });
     });
@@ -459,11 +461,12 @@ describe('parse()', function () {
     it('fails parsing cookie (name)', function (done) {
 
         var definitions = new Statehood.Definitions();
-        Statehood.parse('a@="1"; b="2"; c=3', definitions, function (err, states, invalids) {
+        Statehood.parse('a@="1"; b="2"; c=3', definitions, function (err, states, failed) {
 
-            expect(err).to.exist;
-            expect(invalids).to.deep.equal({
-                'a@': {
+            expect(err).to.exist();
+            expect(err.data).to.deep.equal([
+                {
+                    name: 'a@',
                     value: '1',
                     settings: {
                         isSecure: false,
@@ -473,37 +476,63 @@ describe('parse()', function () {
                         ttl: null,
                         encoding: 'none',
                         strictHeader: true,
-                        failAction: 'error'
+                        ignoreErrors: false
                     },
                     reason: 'Invalid cookie name'
                 }
-            });
+            ]);
+            done();
+        });
+    });
+
+    it('fails parsing cookie (multiple)', function (done) {
+
+        var definitions = new Statehood.Definitions();
+        Statehood.parse('a@="1"; b@="2"; c=3', definitions, function (err, states, failed) {
+
+            expect(err).to.exist();
+            expect(err.data).to.deep.equal([
+                {
+                    name: 'a@',
+                    value: '1',
+                    settings: {
+                        isSecure: false,
+                        isHttpOnly: false,
+                        path: null,
+                        domain: null,
+                        ttl: null,
+                        encoding: 'none',
+                        strictHeader: true,
+                        ignoreErrors: false
+                    },
+                    reason: 'Invalid cookie name'
+                },
+                {
+                    name: 'b@',
+                    value: '2',
+                    settings: {
+                        isSecure: false,
+                        isHttpOnly: false,
+                        path: null,
+                        domain: null,
+                        ttl: null,
+                        encoding: 'none',
+                        strictHeader: true,
+                        ignoreErrors: false
+                    },
+                    reason: 'Invalid cookie name'
+                }
+            ]);
             done();
         });
     });
 
     it('ignores failed parsing cookie (name)', function (done) {
 
-        var definitions = new Statehood.Definitions({ failAction: 'ignore' });
-        Statehood.parse('a@="1"; b="2"; c=3', definitions, function (err, states, invalids) {
+        var definitions = new Statehood.Definitions({ ignoreErrors: true });
+        Statehood.parse('a@="1"; b="2"; c=3', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
-            expect(invalids).to.deep.equal({
-                'a@': {
-                    value: '1',
-                    settings: {
-                        isSecure: false,
-                        isHttpOnly: false,
-                        path: null,
-                        domain: null,
-                        ttl: null,
-                        encoding: 'none',
-                        strictHeader: true,
-                        failAction: 'ignore'
-                    },
-                    reason: 'Invalid cookie name'
-                }
-            });
+            expect(err).to.not.exist();
             done();
         });
     });
@@ -511,11 +540,10 @@ describe('parse()', function () {
     it('fails parsing cookie (empty pair)', function (done) {
 
         var definitions = new Statehood.Definitions();
-        Statehood.parse('a=1; b=2; c=3;;', definitions, function (err, states, invalids) {
+        Statehood.parse('a=1; b=2; c=3;;', definitions, function (err, states, failed) {
 
-            expect(err).to.exist;
-            expect(err.message).to.equal('Bad cookie header');
-            expect(invalids).to.deep.equal({});
+            expect(err).to.exist();
+            expect(err.message).to.equal('Invalid cookie header');
             done();
         });
     });
@@ -524,16 +552,17 @@ describe('parse()', function () {
 
         var definitions = new Statehood.Definitions();
         definitions.add('x', { encoding: 'base64json' });
-        Statehood.parse('x=XeyJ0ZXN0aW5nIjoianNvbiJ9', definitions, function (err, states, invalids) {
+        Statehood.parse('x=XeyJ0ZXN0aW5nIjoianNvbiJ9', definitions, function (err, states, failed) {
 
-            expect(err).to.exist;
-            expect(err.message).to.equal('Bad cookie value: x');
-            expect(invalids).to.deep.equal({
-                x: {
+            expect(err).to.exist();
+            expect(err.message).to.equal('Invalid cookie value');
+            expect(err.data).to.deep.equal([
+                {
+                    name: 'x',
                     value: 'XeyJ0ZXN0aW5nIjoianNvbiJ9',
                     settings: {
                         strictHeader: true,
-                        failAction: 'error',
+                        ignoreErrors: false,
                         isSecure: false,
                         isHttpOnly: false,
                         path: null,
@@ -543,7 +572,7 @@ describe('parse()', function () {
                     },
                     reason: 'Unexpected token ]'
                 }
-            });
+            ]);
 
             done();
         });
@@ -551,11 +580,11 @@ describe('parse()', function () {
 
     it('ignores failed parsing cookie (base64json)', function (done) {
 
-        var definitions = new Statehood.Definitions({ failAction: 'ignore' });
+        var definitions = new Statehood.Definitions({ ignoreErrors: true });
         definitions.add('x', { encoding: 'base64json' });
-        Statehood.parse('x=XeyJ0ZXN0aW5nIjoianNvbiJ9', definitions, function (err, states, invalids) {
+        Statehood.parse('x=XeyJ0ZXN0aW5nIjoianNvbiJ9', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             done();
         });
     });
@@ -564,21 +593,21 @@ describe('parse()', function () {
 
         var definitions = new Statehood.Definitions();
         definitions.add('x', { encoding: 'base64json' });
-        Statehood.parse('x=XeyJ0ZXN0aW5nIjoianNvbiJ9; x=XeyJ0ZXN0aW5dnIjoianNvbiJ9', definitions, function (err, states, invalids) {
+        Statehood.parse('x=XeyJ0ZXN0aW5nIjoianNvbiJ9; x=XeyJ0ZXN0aW5dnIjoianNvbiJ9', definitions, function (err, states, failed) {
 
-            expect(err).to.exist;
-            expect(err.message).to.equal('Bad cookie value: x');
+            expect(err).to.exist();
+            expect(err.message).to.equal('Invalid cookie value');
             done();
         });
     });
 
     it('ignores failed parsing cookie (double base64json)', function (done) {
 
-        var definitions = new Statehood.Definitions({ failAction: 'ignore' });
+        var definitions = new Statehood.Definitions({ ignoreErrors: true });
         definitions.add('x', { encoding: 'base64json' });
-        Statehood.parse('x=XeyJ0ZXN0aW5nIjoianNvbiJ9; x=XeyJ0ZXN0aW5dnIjoianNvbiJ9', definitions, function (err, states, invalids) {
+        Statehood.parse('x=XeyJ0ZXN0aW5nIjoianNvbiJ9; x=XeyJ0ZXN0aW5dnIjoianNvbiJ9', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             done();
         });
     });
@@ -587,10 +616,10 @@ describe('parse()', function () {
 
         var definitions = new Statehood.Definitions();
         definitions.add('key', { encoding: 'iron', password: 'password' });
-        Statehood.parse('key=Fe26.1**f3fc42242467f7a97c042be866a32c1e7645045c2cc085124eadc66d25fc8395*URXpH8k-R0d4O5bnY23fRQ*uq9rd8ZzdjZqUrq9P2Ci0yZ-EEUikGzxTLn6QTcJ0bc**3880c0ac8bab054f529afec8660ebbbbc8050e192e39e5d622e7ac312b9860d0*r_g7N9kJYqXDrFlvOnuKpfpEWwrJLOKMXEI43LAGeFg', definitions, function (err, states, invalids) {
+        Statehood.parse('key=Fe26.1**f3fc42242467f7a97c042be866a32c1e7645045c2cc085124eadc66d25fc8395*URXpH8k-R0d4O5bnY23fRQ*uq9rd8ZzdjZqUrq9P2Ci0yZ-EEUikGzxTLn6QTcJ0bc**3880c0ac8bab054f529afec8660ebbbbc8050e192e39e5d622e7ac312b9860d0*r_g7N9kJYqXDrFlvOnuKpfpEWwrJLOKMXEI43LAGeFg', definitions, function (err, states, failed) {
 
-            expect(err).to.exist;
-            expect(err.message).to.equal('Bad cookie value: key');
+            expect(err).to.exist();
+            expect(err.message).to.equal('Invalid cookie value');
             done();
         });
     });
@@ -599,10 +628,10 @@ describe('parse()', function () {
 
         var definitions = new Statehood.Definitions();
         definitions.add('key', { encoding: 'iron', password: 'passwordx' });
-        Statehood.parse('key=Fe26.2**f3fc42242467f7a97c042be866a32c1e7645045c2cc085124eadc66d25fc8395*URXpH8k-R0d4O5bnY23fRQ*uq9rd8ZzdjZqUrq9P2Ci0yZ-EEUikGzxTLn6QTcJ0bc**3880c0ac8bab054f529afec8660ebbbbc8050e192e39e5d622e7ac312b9860d0*r_g7N9kJYqXDrFlvOnuKpfpEWwrJLOKMXEI43LAGeFg', definitions, function (err, states, invalids) {
+        Statehood.parse('key=Fe26.2**f3fc42242467f7a97c042be866a32c1e7645045c2cc085124eadc66d25fc8395*URXpH8k-R0d4O5bnY23fRQ*uq9rd8ZzdjZqUrq9P2Ci0yZ-EEUikGzxTLn6QTcJ0bc**3880c0ac8bab054f529afec8660ebbbbc8050e192e39e5d622e7ac312b9860d0*r_g7N9kJYqXDrFlvOnuKpfpEWwrJLOKMXEI43LAGeFg', definitions, function (err, states, failed) {
 
-            expect(err).to.exist;
-            expect(err.message).to.equal('Bad cookie value: key');
+            expect(err).to.exist();
+            expect(err.message).to.equal('Invalid cookie value');
             done();
         });
     });
@@ -611,10 +640,10 @@ describe('parse()', function () {
 
         var definitions = new Statehood.Definitions();
         definitions.add('sid', { encoding: 'form', sign: {} });
-        Statehood.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*khsb8lmkNJS-iljqDKZDMmd__2PcHBz7Ksrc-48gZ-0', definitions, function (err, states, invalids) {
+        Statehood.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*khsb8lmkNJS-iljqDKZDMmd__2PcHBz7Ksrc-48gZ-0', definitions, function (err, states, failed) {
 
-            expect(err).to.exist;
-            expect(err.message).to.equal('Bad cookie value: sid');
+            expect(err).to.exist();
+            expect(err.message).to.equal('Invalid cookie value');
             done();
         });
     });
@@ -623,21 +652,21 @@ describe('parse()', function () {
 
         var definitions = new Statehood.Definitions();
         definitions.add('sid', { encoding: 'form', sign: { password: 'password' } });
-        Statehood.parse('sid=a=1&b=2&c=3%20x', definitions, function (err, states, invalids) {
+        Statehood.parse('sid=a=1&b=2&c=3%20x', definitions, function (err, states, failed) {
 
-            expect(err).to.exist;
-            expect(err.message).to.equal('Bad cookie value: sid');
+            expect(err).to.exist();
+            expect(err.message).to.equal('Invalid cookie value');
             done();
         });
     });
 
     it('ignores failed parsing cookie (signed form missing signature)', function (done) {
 
-        var definitions = new Statehood.Definitions({ failAction: 'ignore' });
+        var definitions = new Statehood.Definitions({ ignoreErrors: true });
         definitions.add('sid', { encoding: 'form', sign: { password: 'password' } });
-        Statehood.parse('sid=a=1&b=2&c=3%20x', definitions, function (err, states, invalids) {
+        Statehood.parse('sid=a=1&b=2&c=3%20x', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             done();
         });
     });
@@ -646,21 +675,21 @@ describe('parse()', function () {
 
         var definitions = new Statehood.Definitions();
         definitions.add('sid', { encoding: 'form', sign: { password: 'password' } });
-        Statehood.parse('sid=a=1&b=2&c=3%20x; sid=a=1&b=2&c=3%20x', definitions, function (err, states, invalids) {
+        Statehood.parse('sid=a=1&b=2&c=3%20x; sid=a=1&b=2&c=3%20x', definitions, function (err, states, failed) {
 
-            expect(err).to.exist;
-            expect(err.message).to.equal('Bad cookie value: sid');
+            expect(err).to.exist();
+            expect(err.message).to.equal('Invalid cookie value');
             done();
         });
     });
 
     it('ignores failed parsing cookie (signed form missing signature double)', function (done) {
 
-        var definitions = new Statehood.Definitions({ failAction: 'ignore' });
+        var definitions = new Statehood.Definitions({ ignoreErrors: true });
         definitions.add('sid', { encoding: 'form', sign: { password: 'password' } });
-        Statehood.parse('sid=a=1&b=2&c=3%20x; sid=a=1&b=2&c=3%20x', definitions, function (err, states, invalids) {
+        Statehood.parse('sid=a=1&b=2&c=3%20x; sid=a=1&b=2&c=3%20x', definitions, function (err, states, failed) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             done();
         });
     });
@@ -669,10 +698,10 @@ describe('parse()', function () {
 
         var definitions = new Statehood.Definitions();
         definitions.add('sid', { encoding: 'form', sign: { password: 'password' } });
-        Statehood.parse('sid=a=1&b=2&c=3%20x.', definitions, function (err, states, invalids) {
+        Statehood.parse('sid=a=1&b=2&c=3%20x.', definitions, function (err, states, failed) {
 
-            expect(err).to.exist;
-            expect(err.message).to.equal('Bad cookie value: sid');
+            expect(err).to.exist();
+            expect(err.message).to.equal('Invalid cookie value');
             done();
         });
     });
@@ -681,10 +710,10 @@ describe('parse()', function () {
 
         var definitions = new Statehood.Definitions();
         definitions.add('sid', { encoding: 'form', sign: { password: 'password' } });
-        Statehood.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8', definitions, function (err, states, invalids) {
+        Statehood.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8', definitions, function (err, states, failed) {
 
-            expect(err).to.exist;
-            expect(err.message).to.equal('Bad cookie value: sid');
+            expect(err).to.exist();
+            expect(err.message).to.equal('Invalid cookie value');
             done();
         });
     });
@@ -693,10 +722,10 @@ describe('parse()', function () {
 
         var definitions = new Statehood.Definitions();
         definitions.add('sid', { encoding: 'form', sign: { password: 'password' } });
-        Statehood.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*-Ghc6WvkE55V-TzucCl0NVFmbijeCwgs5Hf5tAVbSUo', definitions, function (err, states, invalids) {
+        Statehood.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*-Ghc6WvkE55V-TzucCl0NVFmbijeCwgs5Hf5tAVbSUo', definitions, function (err, states, failed) {
 
-            expect(err).to.exist;
-            expect(err.message).to.equal('Bad cookie value: sid');
+            expect(err).to.exist();
+            expect(err.message).to.equal('Invalid cookie value');
             done();
         });
     });
@@ -708,7 +737,7 @@ describe('format()', function () {
 
         Statehood.format(null, null, function (err, header) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             expect(header).to.deep.equal([]);
             done();
         });
@@ -718,7 +747,7 @@ describe('format()', function () {
 
         Statehood.format([], null, function (err, header) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             expect(header).to.deep.equal([]);
             done();
         });
@@ -729,7 +758,7 @@ describe('format()', function () {
         Statehood.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: 3600, isSecure: true, isHttpOnly: true, path: '/', domain: 'example.com' } }, null, function (err, header) {
 
             var expires = new Date(Date.now() + 3600);
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; Domain=example.com; Path=/');
             done();
         });
@@ -739,7 +768,7 @@ describe('format()', function () {
 
         Statehood.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: null, isSecure: true, isHttpOnly: true, path: '/', domain: 'example.com' } }, null, function (err, header) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             expect(header[0]).to.equal('sid=fihfieuhr9384hf; Secure; HttpOnly; Domain=example.com; Path=/');
             done();
         });
@@ -749,7 +778,7 @@ describe('format()', function () {
 
         Statehood.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: 0, isSecure: true, isHttpOnly: true, path: '/', domain: 'example.com' } }, null, function (err, header) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; HttpOnly; Domain=example.com; Path=/');
             done();
         });
@@ -760,7 +789,7 @@ describe('format()', function () {
         Statehood.format({ name: 'sid', options: { ttl: 3600, isSecure: true, isHttpOnly: true, path: '/', domain: 'example.com' } }, null, function (err, header) {
 
             var expires = new Date(Date.now() + 3600);
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             expect(header[0]).to.equal('sid=; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; Domain=example.com; Path=/');
             done();
         });
@@ -773,7 +802,7 @@ describe('format()', function () {
         Statehood.format({ name: 'sid', value: 'fihfieuhr9384hf' }, definitions, function (err, header) {
 
             var expires = new Date(Date.now() + 3600);
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; Domain=example.com; Path=/');
             done();
         });
@@ -785,7 +814,7 @@ describe('format()', function () {
         definitions.add('sid', { encoding: 'base64' });
         Statehood.format({ name: 'sid', value: 'fihfieuhr9384hf' }, definitions, function (err, header) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             expect(header[0]).to.equal('sid=ZmloZmlldWhyOTM4NGhm');
             done();
         });
@@ -797,7 +826,7 @@ describe('format()', function () {
         definitions.add('sid', { encoding: 'base64json' });
         Statehood.format({ name: 'sid', value: { a: 1, b: 2, c: 3 } }, definitions, function (err, header) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             expect(header[0]).to.equal('sid=eyJhIjoxLCJiIjoyLCJjIjozfQ==');
             done();
         });
@@ -813,7 +842,7 @@ describe('format()', function () {
 
         Statehood.format({ name: 'sid', value: bad }, definitions, function (err, header) {
 
-            expect(err).to.exist;
+            expect(err).to.exist();
             done();
         });
     });
@@ -824,7 +853,7 @@ describe('format()', function () {
         definitions.add('sid', { encoding: 'form' });
         Statehood.format({ name: 'sid', value: { a: 1, b: 2, c: '3 x' } }, definitions, function (err, header) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             expect(header[0]).to.equal('sid=a=1&b=2&c=3%20x');
             done();
         });
@@ -847,7 +876,7 @@ describe('format()', function () {
         });
         Statehood.format({ name: 'sid', value: { a: 1, b: 2, c: '3 x' } }, definitions, function (err, header) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             expect(header[0]).to.equal('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*xGhc6WvkE55V-TzucCl0NVFmbijeCwgs5Hf5tAVbSUo');
             done();
         });
@@ -871,7 +900,7 @@ describe('format()', function () {
         });
         Statehood.format({ name: 'sid', value: { a: 1, b: 2, c: '3 x' } }, definitions, function (err, header) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             expect(header[0]).to.equal('sid=a=1&b=2&c=3%20x.*4wjD4tIxyiNW-rC3xBqL56TxUbb_aQT5PMykruWlR0Q');
             done();
         });
@@ -886,7 +915,7 @@ describe('format()', function () {
         });
         Statehood.format({ name: 'sid', value: { a: 1, b: 2, c: '3 x' } }, definitions, function (err, header) {
 
-            expect(err).to.exist;
+            expect(err).to.exist();
             expect(err.message).to.equal('Failed to sign cookie (sid) value: Empty password');
             done();
         });
@@ -898,7 +927,7 @@ describe('format()', function () {
         definitions.add('sid', { encoding: 'iron', password: 'password' });
         Statehood.format({ name: 'sid', value: { a: 1, b: 2, c: 3 } }, definitions, function (err, header) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             expect(header[0]).to.have.string('sid=Fe26.2*');
             done();
         });
@@ -910,7 +939,7 @@ describe('format()', function () {
         definitions.add('sid', { encoding: 'iron', password: 'password', iron: Iron.defaults });
         Statehood.format({ name: 'sid', value: { a: 1, b: 2, c: 3 } }, definitions, function (err, header) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             expect(header[0]).to.have.string('sid=Fe26.2*');
             done();
         });
@@ -922,7 +951,7 @@ describe('format()', function () {
         definitions.add('sid', { encoding: 'iron', password: Cryptiles.randomBits(256), iron: Iron.defaults });
         Statehood.format({ name: 'sid', value: { a: 1, b: 2, c: 3 } }, definitions, function (err, header) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             expect(header[0]).to.have.string('sid=Fe26.2*');
             done();
         });
@@ -934,7 +963,7 @@ describe('format()', function () {
         definitions.add('sid', { encoding: 'iron' });
         Statehood.format({ name: 'sid', value: { a: 1, b: 2, c: 3 } }, definitions, function (err, header) {
 
-            expect(err).to.exist;
+            expect(err).to.exist();
             expect(err.message).to.equal('Failed to encode cookie (sid) value: Empty password');
             done();
         });
@@ -948,7 +977,7 @@ describe('format()', function () {
         ], null, function (err, header) {
 
             var expires = new Date(Date.now() + 3600);
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; Domain=example.com; Path=/');
             expect(header[1]).to.equal('pid=xyz');
             done();
@@ -959,7 +988,7 @@ describe('format()', function () {
 
         Statehood.format({ name: 's;id', value: 'fihfieuhr9384hf', options: { isSecure: true, isHttpOnly: false, path: '/', domain: 'example.com' } }, null, function (err, header) {
 
-            expect(err).to.exist;
+            expect(err).to.exist();
             expect(err.message).to.equal('Invalid cookie name: s;id');
             done();
         });
@@ -970,7 +999,7 @@ describe('format()', function () {
         var definitions = new Statehood.Definitions({ strictHeader: false });
         Statehood.format({ name: 's;id', value: 'fihfieuhr9384hf', options: { isSecure: true, isHttpOnly: false, path: '/', domain: 'example.com' } }, definitions, function (err, header) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             expect(header[0]).to.equal('s;id=fihfieuhr9384hf; Secure; Domain=example.com; Path=/');
             done();
         });
@@ -982,7 +1011,7 @@ describe('format()', function () {
         definitions.add('s;id', { strictHeader: false });
         Statehood.format({ name: 's;id', value: 'fihfieuhr9384hf', options: { isSecure: true, isHttpOnly: false, path: '/', domain: 'example.com' } }, definitions, function (err, header) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             expect(header[0]).to.equal('s;id=fihfieuhr9384hf; Secure; Domain=example.com; Path=/');
             done();
         });
@@ -992,7 +1021,7 @@ describe('format()', function () {
 
         Statehood.format({ name: 'sid', value: 'fi"hfieuhr9384hf', options: { isSecure: true, isHttpOnly: false, path: '/', domain: 'example.com' } }, null, function (err, header) {
 
-            expect(err).to.exist;
+            expect(err).to.exist();
             expect(err.message).to.equal('Invalid cookie value: fi"hfieuhr9384hf');
             done();
         });
@@ -1002,7 +1031,7 @@ describe('format()', function () {
 
         Statehood.format({ name: 'sid', value: {}, options: { isSecure: true, isHttpOnly: false, path: '/', domain: 'example.com' } }, null, function (err, header) {
 
-            expect(err).to.exist;
+            expect(err).to.exist();
             expect(err.message).to.equal('Invalid cookie value: [object Object]');
             done();
         });
@@ -1013,7 +1042,7 @@ describe('format()', function () {
         var definitions = new Statehood.Definitions({ strictHeader: false });
         Statehood.format({ name: 'sid', value: 'fi"hfieuhr9384hf', options: { isSecure: true, isHttpOnly: false, path: '/', domain: 'example.com' } }, definitions, function (err, header) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             expect(header[0]).to.equal('sid=fi"hfieuhr9384hf; Secure; Domain=example.com; Path=/');
             done();
         });
@@ -1023,7 +1052,7 @@ describe('format()', function () {
 
         Statehood.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isSecure: true, isHttpOnly: false, path: '/', domain: '-example.com' } }, null, function (err, header) {
 
-            expect(err).to.exist;
+            expect(err).to.exist();
             expect(err.message).to.equal('Invalid cookie domain: -example.com');
             done();
         });
@@ -1033,7 +1062,7 @@ describe('format()', function () {
 
         Statehood.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isSecure: true, isHttpOnly: false, path: '/', domain: '1234567890123456789012345678901234567890123456789012345678901234567890.example.com' } }, null, function (err, header) {
 
-            expect(err).to.exist;
+            expect(err).to.exist();
             expect(err.message).to.equal('Cookie domain too long: 1234567890123456789012345678901234567890123456789012345678901234567890.example.com');
             done();
         });
@@ -1043,7 +1072,7 @@ describe('format()', function () {
 
         Statehood.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isSecure: true, isHttpOnly: false, path: '/', domain: '.12345678901234567890.example.com' } }, null, function (err, header) {
 
-            expect(err).to.not.exist;
+            expect(err).to.not.exist();
             done();
         });
     });
@@ -1052,7 +1081,7 @@ describe('format()', function () {
 
         Statehood.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isSecure: true, isHttpOnly: false, path: 'd', domain: 'example.com' } }, null, function (err, header) {
 
-            expect(err).to.exist;
+            expect(err).to.exist();
             expect(err.message).to.equal('Invalid cookie path: d');
             done();
         });
@@ -1093,7 +1122,7 @@ describe('exclude()', function () {
 
         var header = 'a';
         var result = Statehood.exclude(header, ['b']);
-        expect(result.message).to.equal('Bad cookie header');
+        expect(result.message).to.equal('Invalid cookie header');
         done();
     });
 });

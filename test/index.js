@@ -1100,6 +1100,68 @@ describe('Definitions', function () {
             });
         });
     });
+
+    describe('passThrough()', function () {
+
+        it('returns header unchanged', function (done) {
+
+            var definitions = new Statehood.Definitions();
+            var header = 'a=4;b=5;c=6';
+            var result = definitions.passThrough(header);
+            expect(result).to.equal(header);
+            done();
+        });
+
+        it('returns header excluding local', function (done) {
+
+            var definitions = new Statehood.Definitions();
+            definitions.add('b');
+            var header = 'a=4;b=5;c=6';
+            var result = definitions.passThrough(header);
+            expect(result).to.equal('a=4;c=6');
+            done();
+        });
+
+        it('returns header including local (fallback)', function (done) {
+
+            var definitions = new Statehood.Definitions();
+            definitions.add('b');
+            var header = 'a=4;b=5;c=6';
+            var result = definitions.passThrough(header, true);
+            expect(result).to.equal('a=4;b=5;c=6');
+            done();
+        });
+
+        it('returns header including local (state option)', function (done) {
+
+            var definitions = new Statehood.Definitions();
+            definitions.add('b', { passThrough: true });
+            var header = 'a=4;b=5;c=6';
+            var result = definitions.passThrough(header);
+            expect(result).to.equal('a=4;b=5;c=6');
+            done();
+        });
+
+        it('returns header including local (state option with fallback)', function (done) {
+
+            var definitions = new Statehood.Definitions();
+            definitions.add('b', { passThrough: false });
+            var header = 'a=4;b=5;c=6';
+            var result = definitions.passThrough(header, true);
+            expect(result).to.equal('a=4;c=6');
+            done();
+        });
+
+        it('errors on invalid header', function (done) {
+
+            var definitions = new Statehood.Definitions();
+            definitions.add('b');
+            var header = 'a=4;b=5;c=6;;';
+            var result = definitions.passThrough(header);
+            expect(result.message).to.equal('Invalid cookie header');
+            done();
+        });
+    });
 });
 
 describe('prepareValue()', function () {

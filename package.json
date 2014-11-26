@@ -1,7 +1,7 @@
 {
   "name": "statehood",
   "description": "HTTP State Management Utilities",
-  "version": "2.0.0-rc1",
+  "version": "2.0.0-rc2",
   "repository": "git://github.com/hapijs/statehood",
   "main": "index",
   "keywords": [

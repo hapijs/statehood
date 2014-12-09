@@ -1,7 +1,7 @@
 {
   "name": "statehood",
   "description": "HTTP State Management Utilities",
-  "version": "2.0.0-rc2",
+  "version": "2.0.0",
   "repository": "git://github.com/hapijs/statehood",
   "main": "index",
   "keywords": [
@@ -14,12 +14,12 @@
     "node": ">=0.10.32"
   },
   "dependencies": {
-      "boom": "2.x.x",
-      "cryptiles": "2.x.x",
-      "hoek": "2.x.x",
-      "iron": "2.x.x",
-      "items": "1.x.x",
-      "joi": "4.x.x"
+    "boom": "2.x.x",
+    "cryptiles": "2.x.x",
+    "hoek": "2.x.x",
+    "iron": "2.x.x",
+    "items": "1.x.x",
+    "joi": "5.x.x"
   },
   "devDependencies": {
     "code": "1.x.x",

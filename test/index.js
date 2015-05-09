@@ -60,6 +60,19 @@ describe('Definitions', function () {
             expect(definitions.names).to.deep.equal(['test']);
             done();
         });
+
+        it('adds definition with null value', function (done) {
+
+            var definitions = new Statehood.Definitions({ path: '/' });
+
+            definitions.add('base');
+            expect(definitions.cookies.base.path).to.equal('/');
+
+            definitions.add('test', { path: null });
+            expect(definitions.cookies.test.path).to.equal(null);
+
+            done();
+        });
     });
 
     describe('parse()', function () {
@@ -768,7 +781,7 @@ describe('Definitions', function () {
 
         it('formats a header (with null ttl)', function (done) {
 
-            var definitions = new Statehood.Definitions();
+            var definitions = new Statehood.Definitions({ ttl: 3600 });
             definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: null, isSecure: true, isHttpOnly: true, path: '/', domain: 'example.com' } }, function (err, header) {
 
                 expect(err).to.not.exist();
@@ -1202,4 +1215,3 @@ describe('exclude()', function () {
         done();
     });
 });
-

@@ -1,9 +1,9 @@
 {
   "name": "statehood",
   "description": "HTTP State Management Utilities",
-  "version": "2.0.0-rc2",
+  "version": "2.1.0",
   "repository": "git://github.com/hapijs/statehood",
-  "main": "index",
+  "main": "lib/index.js",
   "keywords": [
     "HTTP",
     "state",
@@ -23,15 +23,12 @@
   },
   "devDependencies": {
     "code": "1.x.x",
+    "hapi": "8.x.x",
     "lab": "5.x.x"
   },
   "scripts": {
-    "test": "make test-cov"
+    "test": "lab -a code -t 100 -L",
+    "test-cov-html": "lab -a code -r html -o coverage.html"
   },
-  "licenses": [
-    {
-      "type": "BSD",
-      "url": "http://github.com/hapijs/statehood/raw/master/LICENSE"
-    }
-  ]
+  "license": "BSD-3-Clause"
 }

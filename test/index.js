@@ -92,11 +92,11 @@ describe('Definitions', () => {
         it('parses cookie (loose)', (done) => {
 
             const definitions = new Statehood.Definitions({ strictHeader: false });
-            definitions.parse('a="1; b="2"; c=3; d[1]=4', (err, states, failed) => {
+            definitions.parse('a="1; b="2"; c=3; d[1]=4;=1', (err, states, failed) => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ a: '"1', b: '2', c: '3', 'd[1]': '4' });
+                expect(states).to.deep.equal({ a: '"1', b: '2', c: '3', 'd[1]': '4', '': '1' });
                 done();
             });
         });
@@ -1025,6 +1025,17 @@ describe('Definitions', () => {
             });
         });
 
+        it('allows empty cookie name in loose mode', (done) => {
+
+            const definitions = new Statehood.Definitions({ strictHeader: false });
+            definitions.format({ name: '', value: 'fihfieuhr9384hf', options: { isSecure: true, isHttpOnly: false, path: '/', domain: 'example.com' } }, (err, header) => {
+
+                expect(err).to.not.exist();
+                expect(header[0]).to.equal('=fihfieuhr9384hf; Secure; Domain=example.com; Path=/');
+                done();
+            });
+        });
+
         it('allows bad cookie name in loose mode (cookie level)', (done) => {
 
             const definitions = new Statehood.Definitions();
@@ -1204,6 +1215,14 @@ describe('exclude()', () => {
         const header = 'a=4;b=5;c=6';
         const result = Statehood.exclude(header, ['b']);
         expect(result).to.equal('a=4;c=6');
+        done();
+    });
+
+    it('returns keys without excluded (empty name)', (done) => {
+
+        const header = '=4;b=5;c=6';
+        const result = Statehood.exclude(header, ['']);
+        expect(result).to.equal('b=5;c=6');
         done();
     });
 

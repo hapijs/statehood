@@ -24,6 +24,8 @@ const expect = Code.expect;
 
 describe('Definitions', () => {
 
+    const password = 'a_password_that_is_not_too_short_and_also_not_very_random_but_is_good_enough';
+
     describe('add()', () => {
 
         it('throws on missing name', (done) => {
@@ -340,8 +342,8 @@ describe('Definitions', () => {
         it('parses cookie (iron)', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.add('key', { encoding: 'iron', password: 'password' });
-            definitions.parse('key=Fe26.2**f3fc42242467f7a97c042be866a32c1e7645045c2cc085124eadc66d25fc8395*URXpH8k-R0d4O5bnY23fRQ*uq9rd8ZzdjZqUrq9P2Ci0yZ-EEUikGzxTLn6QTcJ0bc**3880c0ac8bab054f529afec8660ebbbbc8050e192e39e5d622e7ac312b9860d0*r_g7N9kJYqXDrFlvOnuKpfpEWwrJLOKMXEI43LAGeFg', (err, states, failed) => {
+            definitions.add('key', { encoding: 'iron', password: password });
+            definitions.parse('key=Fe26.2**8ec29d2e64ab19a0429faab76c46167c933b7c2c94dac8022bb4c97de0fc359d*O2aDw2nk5Svfc4xiuatycw*DWWOPpI3-B6Bb4oOOuNxGT8v9S4jZ_hpQZaaeYREvuk**34d98c193fd2048b40655966115d75dae62aab96cd1f5b374908b86fc47a61d3*H_zsHSt6UoOj3QgBIuNMrNHAUosM6Sp51uLKak0ZUjg', (err, states, failed) => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
@@ -353,8 +355,8 @@ describe('Definitions', () => {
         it('parses cookie (iron settings)', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.add('key', { encoding: 'iron', password: 'password', iron: Iron.defaults });
-            definitions.parse('key=Fe26.2**f3fc42242467f7a97c042be866a32c1e7645045c2cc085124eadc66d25fc8395*URXpH8k-R0d4O5bnY23fRQ*uq9rd8ZzdjZqUrq9P2Ci0yZ-EEUikGzxTLn6QTcJ0bc**3880c0ac8bab054f529afec8660ebbbbc8050e192e39e5d622e7ac312b9860d0*r_g7N9kJYqXDrFlvOnuKpfpEWwrJLOKMXEI43LAGeFg', (err, states, failed) => {
+            definitions.add('key', { encoding: 'iron', password: password, iron: Iron.defaults });
+            definitions.parse('key=Fe26.2**8ec29d2e64ab19a0429faab76c46167c933b7c2c94dac8022bb4c97de0fc359d*O2aDw2nk5Svfc4xiuatycw*DWWOPpI3-B6Bb4oOOuNxGT8v9S4jZ_hpQZaaeYREvuk**34d98c193fd2048b40655966115d75dae62aab96cd1f5b374908b86fc47a61d3*H_zsHSt6UoOj3QgBIuNMrNHAUosM6Sp51uLKak0ZUjg', (err, states, failed) => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
@@ -366,8 +368,9 @@ describe('Definitions', () => {
         it('parses cookie (signed form)', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.add('sid', { encoding: 'form', sign: { password: 'password' } });
-            definitions.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*xGhc6WvkE55V-TzucCl0NVFmbijeCwgs5Hf5tAVbSUo', (err, states, failed) => {
+            definitions.add('sid', { encoding: 'form', sign: { password: password } });
+
+            definitions.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*anm-37hjjRC3eY7Mcv4gP7gXgXBKTtUz9fNFWnetEZo', (err, states, failed) => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
@@ -379,8 +382,8 @@ describe('Definitions', () => {
         it('parses cookie (signed form integrity settings)', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.add('sid', { encoding: 'form', sign: { password: 'password', integrity: Iron.defaults.integrity } });
-            definitions.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*xGhc6WvkE55V-TzucCl0NVFmbijeCwgs5Hf5tAVbSUo', (err, states, failed) => {
+            definitions.add('sid', { encoding: 'form', sign: { password: password, integrity: Iron.defaults.integrity } });
+            definitions.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*anm-37hjjRC3eY7Mcv4gP7gXgXBKTtUz9fNFWnetEZo', (err, states, failed) => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
@@ -627,7 +630,7 @@ describe('Definitions', () => {
         it('fails parsing cookie (iron)', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.add('key', { encoding: 'iron', password: 'password' });
+            definitions.add('key', { encoding: 'iron', password: password });
             definitions.parse('key=Fe26.1**f3fc42242467f7a97c042be866a32c1e7645045c2cc085124eadc66d25fc8395*URXpH8k-R0d4O5bnY23fRQ*uq9rd8ZzdjZqUrq9P2Ci0yZ-EEUikGzxTLn6QTcJ0bc**3880c0ac8bab054f529afec8660ebbbbc8050e192e39e5d622e7ac312b9860d0*r_g7N9kJYqXDrFlvOnuKpfpEWwrJLOKMXEI43LAGeFg', (err, states, failed) => {
 
                 expect(err).to.exist();
@@ -663,7 +666,7 @@ describe('Definitions', () => {
         it('fails parsing cookie (signed form missing signature)', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.add('sid', { encoding: 'form', sign: { password: 'password' } });
+            definitions.add('sid', { encoding: 'form', sign: { password: password } });
             definitions.parse('sid=a=1&b=2&c=3%20x', (err, states, failed) => {
 
                 expect(err).to.exist();
@@ -675,7 +678,7 @@ describe('Definitions', () => {
         it('ignores failed parsing cookie (signed form missing signature)', (done) => {
 
             const definitions = new Statehood.Definitions({ ignoreErrors: true });
-            definitions.add('sid', { encoding: 'form', sign: { password: 'password' } });
+            definitions.add('sid', { encoding: 'form', sign: { password: password } });
             definitions.parse('sid=a=1&b=2&c=3%20x', (err, states, failed) => {
 
                 expect(err).to.not.exist();
@@ -686,7 +689,7 @@ describe('Definitions', () => {
         it('fails parsing cookie (signed form missing signature double)', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.add('sid', { encoding: 'form', sign: { password: 'password' } });
+            definitions.add('sid', { encoding: 'form', sign: { password: password } });
             definitions.parse('sid=a=1&b=2&c=3%20x; sid=a=1&b=2&c=3%20x', (err, states, failed) => {
 
                 expect(err).to.exist();
@@ -698,7 +701,7 @@ describe('Definitions', () => {
         it('ignores failed parsing cookie (signed form missing signature double)', (done) => {
 
             const definitions = new Statehood.Definitions({ ignoreErrors: true });
-            definitions.add('sid', { encoding: 'form', sign: { password: 'password' } });
+            definitions.add('sid', { encoding: 'form', sign: { password: password } });
             definitions.parse('sid=a=1&b=2&c=3%20x; sid=a=1&b=2&c=3%20x', (err, states, failed) => {
 
                 expect(err).to.not.exist();
@@ -709,7 +712,7 @@ describe('Definitions', () => {
         it('fails parsing cookie (signed form missing signature with sep)', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.add('sid', { encoding: 'form', sign: { password: 'password' } });
+            definitions.add('sid', { encoding: 'form', sign: { password: password } });
             definitions.parse('sid=a=1&b=2&c=3%20x.', (err, states, failed) => {
 
                 expect(err).to.exist();
@@ -721,7 +724,7 @@ describe('Definitions', () => {
         it('fails parsing cookie (signed form invalid signature)', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.add('sid', { encoding: 'form', sign: { password: 'password' } });
+            definitions.add('sid', { encoding: 'form', sign: { password: password } });
             definitions.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8', (err, states, failed) => {
 
                 expect(err).to.exist();
@@ -733,7 +736,7 @@ describe('Definitions', () => {
         it('fails parsing cookie (signed form wrong signature)', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.add('sid', { encoding: 'form', sign: { password: 'password' } });
+            definitions.add('sid', { encoding: 'form', sign: { password: password } });
             definitions.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*-Ghc6WvkE55V-TzucCl0NVFmbijeCwgs5Hf5tAVbSUo', (err, states, failed) => {
 
                 expect(err).to.exist();
@@ -883,7 +886,7 @@ describe('Definitions', () => {
             definitions.add('sid', {
                 encoding: 'form',
                 sign: {
-                    password: 'password',
+                    password: password,
                     integrity: {
                         saltBits: 256,
                         algorithm: 'sha256',
@@ -895,7 +898,7 @@ describe('Definitions', () => {
             definitions.format({ name: 'sid', value: { a: 1, b: 2, c: '3 x' } }, (err, header) => {
 
                 expect(err).to.not.exist();
-                expect(header[0]).to.equal('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*xGhc6WvkE55V-TzucCl0NVFmbijeCwgs5Hf5tAVbSUo');
+                expect(header[0]).to.equal('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*anm-37hjjRC3eY7Mcv4gP7gXgXBKTtUz9fNFWnetEZo');
                 done();
             });
         });
@@ -942,7 +945,7 @@ describe('Definitions', () => {
         it('formats a header with server definition (iron)', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.add('sid', { encoding: 'iron', password: 'password' });
+            definitions.add('sid', { encoding: 'iron', password: password });
             definitions.format({ name: 'sid', value: { a: 1, b: 2, c: 3 } }, (err, header) => {
 
                 expect(err).to.not.exist();
@@ -954,7 +957,7 @@ describe('Definitions', () => {
         it('formats a header with server definition (iron + options)', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.add('sid', { encoding: 'iron', password: 'password', iron: Iron.defaults });
+            definitions.add('sid', { encoding: 'iron', password: password, iron: Iron.defaults });
             definitions.format({ name: 'sid', value: { a: 1, b: 2, c: 3 } }, (err, header) => {
 
                 expect(err).to.not.exist();

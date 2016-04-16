@@ -91,10 +91,22 @@ describe('Definitions', () => {
             });
         });
 
-        it('parses cookie (loose)', (done) => {
+        it('parses cookie (loose - with empty name using equals)', (done) => {
 
             const definitions = new Statehood.Definitions({ strictHeader: false });
             definitions.parse('a="1; b="2"; c=3; d[1]=4;=1', (err, states, failed) => {
+
+                expect(err).to.not.exist();
+                expect(failed).to.have.length(0);
+                expect(states).to.deep.equal({ a: '"1', b: '2', c: '3', 'd[1]': '4', '': '1' });
+                done();
+            });
+        });
+
+        it('parses cookie (loose  - with empty name not using equals)', (done) => {
+
+            const definitions = new Statehood.Definitions({ strictHeader: false });
+            definitions.parse('a="1; b="2"; c=3; d[1]=4; 1', (err, states, failed) => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
@@ -1221,7 +1233,7 @@ describe('exclude()', () => {
         done();
     });
 
-    it('returns keys without excluded (empty name)', (done) => {
+    it('returns keys without excluded (empty name with equals)', (done) => {
 
         const header = '=4;b=5;c=6';
         const result = Statehood.exclude(header, ['']);
@@ -1229,11 +1241,11 @@ describe('exclude()', () => {
         done();
     });
 
-    it('returns error on invalid header', (done) => {
+    it('returns keys without excluded (empty name without equals)', (done) => {
 
-        const header = 'a';
-        const result = Statehood.exclude(header, ['b']);
-        expect(result.message).to.equal('Invalid cookie header');
+        const header = '4;b=5;c=6';
+        const result = Statehood.exclude(header, ['']);
+        expect(result).to.equal('b=5;c=6');
         done();
     });
 });

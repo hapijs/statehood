@@ -243,7 +243,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ a: { b: '%p123456789' } });
+                expect(states).to.deep.equal({ a: { b: '%p123456789' } }, { prototype: false });
                 done();
             });
         });
@@ -256,7 +256,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ a: { b: '123456789', c: 'something else' } });
+                expect(states).to.deep.equal({ a: { b: '123456789', c: 'something else' } }, { prototype: false });
                 done();
             });
         });
@@ -374,7 +374,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ sid: { a: '1', b: '2', c: '3 x' } });
+                expect(states).to.deep.equal({ sid: { a: '1', b: '2', c: '3 x' } }, { prototype: false });
                 done();
             });
         });
@@ -387,7 +387,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ sid: { a: '1', b: '2', c: '3 x' } });
+                expect(states).to.deep.equal({ sid: { a: '1', b: '2', c: '3 x' } }, { prototype: false });
                 done();
             });
         });
@@ -571,7 +571,7 @@ describe('Definitions', () => {
 
                 expect(err).to.exist();
                 expect(err.message).to.equal('Invalid cookie value');
-                expect(err.data).to.deep.equal([
+                expect(err.data).to.deep.include([
                     {
                         name: 'x',
                         value: 'XeyJ0ZXN0aW5nIjoianNvbiJ9',
@@ -584,10 +584,10 @@ describe('Definitions', () => {
                             domain: null,
                             ttl: null,
                             encoding: 'base64json'
-                        },
-                        reason: 'Unexpected token ]'
+                        }
                     }
                 ]);
+                expect(err.data[0].reason).to.startWith('Unexpected token ]');
 
                 done();
             });

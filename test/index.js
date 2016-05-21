@@ -42,7 +42,7 @@ describe('Definitions', () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('test');
-            expect(definitions.cookies.test).to.deep.equal({
+            expect(definitions.cookies.test).to.equal({
                 strictHeader: true,
                 ignoreErrors: false,
                 isSecure: false,
@@ -59,7 +59,7 @@ describe('Definitions', () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('test');
-            expect(definitions.names).to.deep.equal(['test']);
+            expect(definitions.names).to.equal(['test']);
             done();
         });
 
@@ -86,7 +86,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ a: 'b' });
+                expect(states).to.equal({ a: 'b' });
                 done();
             });
         });
@@ -98,7 +98,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ a: '"1', b: '2', c: '3', 'd[1]': '4', '': '1' });
+                expect(states).to.equal({ a: '"1', b: '2', c: '3', 'd[1]': '4', '': '1' });
                 done();
             });
         });
@@ -110,7 +110,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ a: '' });
+                expect(states).to.equal({ a: '' });
                 done();
             });
         });
@@ -122,7 +122,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ a: '' });
+                expect(states).to.equal({ a: '' });
                 done();
             });
         });
@@ -134,7 +134,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ a: '' });
+                expect(states).to.equal({ a: '' });
                 done();
             });
         });
@@ -146,7 +146,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ a: '23' });
+                expect(states).to.equal({ a: '23' });
                 done();
             });
         });
@@ -158,7 +158,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ a: ['1', '2'] });
+                expect(states).to.equal({ a: ['1', '2'] });
                 done();
             });
         });
@@ -170,7 +170,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ a: '1', b: '2', c: '3' });
+                expect(states).to.equal({ a: '1', b: '2', c: '3' });
                 done();
             });
         });
@@ -182,7 +182,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ a: '1', b: '2', c: '3' });
+                expect(states).to.equal({ a: '1', b: '2', c: '3' });
                 done();
             });
         });
@@ -194,7 +194,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ A: 'b', b: 'c' });
+                expect(states).to.equal({ A: 'b', b: 'c' });
                 done();
             });
         });
@@ -206,7 +206,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ a: 'b=123456789&c=something' });
+                expect(states).to.equal({ a: 'b=123456789&c=something' });
                 done();
             });
         });
@@ -218,7 +218,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ a: '%1', b: 'x' });
+                expect(states).to.equal({ a: '%1', b: 'x' });
                 done();
             });
         });
@@ -230,7 +230,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ z: '%20%22%2c%3b%2f' });
+                expect(states).to.equal({ z: '%20%22%2c%3b%2f' });
                 done();
             });
         });
@@ -243,7 +243,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ a: { b: '%p123456789' } });
+                expect(states).to.equal({ a: { b: '%p123456789' } });
                 done();
             });
         });
@@ -256,7 +256,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ a: { b: '123456789', c: 'something else' } });
+                expect(states).to.equal({ a: { b: '123456789', c: 'something else' } });
                 done();
             });
         });
@@ -269,7 +269,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ a: ['test', 'test'] });
+                expect(states).to.equal({ a: ['test', 'test'] });
                 done();
             });
         });
@@ -282,7 +282,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ a: ['test', 'test', 'test'] });
+                expect(states).to.equal({ a: ['test', 'test', 'test'] });
                 done();
             });
         });
@@ -295,7 +295,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ key: 'test' });
+                expect(states).to.equal({ key: 'test' });
                 done();
             });
         });
@@ -308,7 +308,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ key: 'test' });
+                expect(states).to.equal({ key: 'test' });
                 done();
             });
         });
@@ -321,7 +321,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ key: 'dGVzdA' });
+                expect(states).to.equal({ key: 'dGVzdA' });
                 done();
             });
         });
@@ -334,7 +334,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ key: { testing: 'json' } });
+                expect(states).to.equal({ key: { testing: 'json' } });
                 done();
             });
         });
@@ -347,7 +347,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ key: { a: 1, b: 2, c: 3 } });
+                expect(states).to.equal({ key: { a: 1, b: 2, c: 3 } });
                 done();
             });
         });
@@ -360,7 +360,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ key: { a: 1, b: 2, c: 3 } });
+                expect(states).to.equal({ key: { a: 1, b: 2, c: 3 } });
                 done();
             });
         });
@@ -374,7 +374,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ sid: { a: '1', b: '2', c: '3 x' } });
+                expect(states).to.equal({ sid: { a: '1', b: '2', c: '3 x' } });
                 done();
             });
         });
@@ -387,7 +387,8 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ sid: { a: '1', b: '2', c: '3 x' } });
+                expect(states.sid).to.equal({ a: '1', b: '2', c: '3 x' });
+                expect(states).to.equal({ sid: { a: '1', b: '2', c: '3 x' } });
                 done();
             });
         });
@@ -400,7 +401,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.deep.equal({ a: '"1' });
+                expect(states).to.equal({ a: '"1' });
                 done();
             });
         });
@@ -411,7 +412,7 @@ describe('Definitions', () => {
             definitions.parse('a="1; b="2"; c=3', (err, states, failed) => {
 
                 expect(err).to.exist();
-                expect(err.data).to.deep.equal([
+                expect(err.data).to.equal([
                     {
                         name: 'a',
                         value: '"1',
@@ -429,7 +430,7 @@ describe('Definitions', () => {
                     }
                 ]);
 
-                expect(failed).to.deep.equal(err.data);
+                expect(failed).to.equal(err.data);
 
                 done();
             });
@@ -441,7 +442,7 @@ describe('Definitions', () => {
             definitions.parse('a="1; b="2"; c=3', (err, states, failed) => {
 
                 expect(err).to.not.exist();
-                expect(failed).to.deep.equal([
+                expect(failed).to.equal([
                     {
                         name: 'a',
                         value: '"1',
@@ -479,7 +480,7 @@ describe('Definitions', () => {
             definitions.parse('a@="1"; b="2"; c=3', (err, states, failed) => {
 
                 expect(err).to.exist();
-                expect(err.data).to.deep.equal([
+                expect(err.data).to.equal([
                     {
                         name: 'a@',
                         value: '1',
@@ -506,7 +507,7 @@ describe('Definitions', () => {
             definitions.parse('a@="1"; b@="2"; c=3', (err, states, failed) => {
 
                 expect(err).to.exist();
-                expect(err.data).to.deep.equal([
+                expect(err.data).to.equal([
                     {
                         name: 'a@',
                         value: '1',
@@ -571,7 +572,7 @@ describe('Definitions', () => {
 
                 expect(err).to.exist();
                 expect(err.message).to.equal('Invalid cookie value');
-                expect(err.data).to.deep.equal([
+                expect(err.data).to.equal([
                     {
                         name: 'x',
                         value: 'XeyJ0ZXN0aW5nIjoianNvbiJ9',
@@ -585,7 +586,7 @@ describe('Definitions', () => {
                             ttl: null,
                             encoding: 'base64json'
                         },
-                        reason: 'Unexpected token ]'
+                        reason: err.data[0].reason
                     }
                 ]);
 
@@ -754,7 +755,7 @@ describe('Definitions', () => {
             definitions.format(null, (err, header) => {
 
                 expect(err).to.not.exist();
-                expect(header).to.deep.equal([]);
+                expect(header).to.equal([]);
                 done();
             });
         });
@@ -765,7 +766,7 @@ describe('Definitions', () => {
             definitions.format([], (err, header) => {
 
                 expect(err).to.not.exist();
-                expect(header).to.deep.equal([]);
+                expect(header).to.equal([]);
                 done();
             });
         });

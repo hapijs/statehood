@@ -261,6 +261,18 @@ describe('Definitions', () => {
             });
         });
 
+        it('parses cookie with an empty key-value on non-strict header (form single)', (done) => {
+
+            const definitions = new Statehood.Definitions({ strictHeader: false, encoding: 'form' });
+            definitions.parse('=', (err, states, failed) => {
+
+                expect(err).to.not.exist();
+                expect(failed).to.have.length(0);
+                expect(states).to.equal({ '': { } });
+                done();
+            });
+        });
+
         it('parses cookie (base64 array 2)', (done) => {
 
             const definitions = new Statehood.Definitions();
@@ -322,6 +334,18 @@ describe('Definitions', () => {
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
                 expect(states).to.equal({ key: 'dGVzdA' });
+                done();
+            });
+        });
+
+        it('parses cookie with an empty key-value on non-strict header (none encoding)', (done) => {
+
+            const definitions = new Statehood.Definitions({ strictHeader: false, encoding: 'none' });
+            definitions.parse('=', (err, states, failed) => {
+
+                expect(err).to.not.exist();
+                expect(failed).to.have.length(0);
+                expect(states).to.equal({ '': '' });
                 done();
             });
         });

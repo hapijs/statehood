@@ -47,6 +47,7 @@ describe('Definitions', () => {
                 ignoreErrors: false,
                 isSecure: false,
                 isHttpOnly: false,
+                isSameSite: false,
                 path: null,
                 domain: null,
                 ttl: null,
@@ -443,6 +444,7 @@ describe('Definitions', () => {
                         settings: {
                             isSecure: false,
                             isHttpOnly: false,
+                            isSameSite: false,
                             path: null,
                             domain: null,
                             ttl: null,
@@ -473,6 +475,7 @@ describe('Definitions', () => {
                         settings: {
                             isSecure: false,
                             isHttpOnly: false,
+                            isSameSite: false,
                             path: null,
                             domain: null,
                             ttl: null,
@@ -511,6 +514,7 @@ describe('Definitions', () => {
                         settings: {
                             isSecure: false,
                             isHttpOnly: false,
+                            isSameSite: false,
                             path: null,
                             domain: null,
                             ttl: null,
@@ -538,6 +542,7 @@ describe('Definitions', () => {
                         settings: {
                             isSecure: false,
                             isHttpOnly: false,
+                            isSameSite: false,
                             path: null,
                             domain: null,
                             ttl: null,
@@ -553,6 +558,7 @@ describe('Definitions', () => {
                         settings: {
                             isSecure: false,
                             isHttpOnly: false,
+                            isSameSite: false,
                             path: null,
                             domain: null,
                             ttl: null,
@@ -605,6 +611,7 @@ describe('Definitions', () => {
                             ignoreErrors: false,
                             isSecure: false,
                             isHttpOnly: false,
+                            isSameSite: false,
                             path: null,
                             domain: null,
                             ttl: null,
@@ -798,11 +805,11 @@ describe('Definitions', () => {
         it('formats a header', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: 3600, isSecure: true, isHttpOnly: true, path: '/', domain: 'example.com' } }, (err, header) => {
+            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: 3600, isSecure: true, isHttpOnly: true, isSameSite: 'Strict', path: '/', domain: 'example.com' } }, (err, header) => {
 
                 const expires = new Date(Date.now() + 3600);
                 expect(err).to.not.exist();
-                expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; Domain=example.com; Path=/');
+                expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; SameSite=Strict; Domain=example.com; Path=/');
                 done();
             });
         });

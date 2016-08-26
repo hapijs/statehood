@@ -1,7 +1,7 @@
 {
   "name": "statehood",
   "description": "HTTP State Management Utilities",
-  "version": "4.0.4",
+  "version": "4.1.0",
   "repository": "git://github.com/hapijs/statehood",
   "main": "lib/index.js",
   "keywords": [

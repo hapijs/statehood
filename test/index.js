@@ -45,9 +45,9 @@ describe('Definitions', () => {
             expect(definitions.cookies.test).to.equal({
                 strictHeader: true,
                 ignoreErrors: false,
-                isSecure: false,
-                isHttpOnly: false,
-                isSameSite: false,
+                isSecure: true,
+                isHttpOnly: true,
+                isSameSite: 'Strict',
                 path: null,
                 domain: null,
                 ttl: null,
@@ -442,9 +442,9 @@ describe('Definitions', () => {
                         name: 'a',
                         value: '"1',
                         settings: {
-                            isSecure: false,
-                            isHttpOnly: false,
-                            isSameSite: false,
+                            isSecure: true,
+                            isHttpOnly: true,
+                            isSameSite: 'Strict',
                             path: null,
                             domain: null,
                             ttl: null,
@@ -473,9 +473,9 @@ describe('Definitions', () => {
                         name: 'a',
                         value: '"1',
                         settings: {
-                            isSecure: false,
-                            isHttpOnly: false,
-                            isSameSite: false,
+                            isSecure: true,
+                            isHttpOnly: true,
+                            isSameSite: 'Strict',
                             path: null,
                             domain: null,
                             ttl: null,
@@ -512,9 +512,9 @@ describe('Definitions', () => {
                         name: 'a@',
                         value: '1',
                         settings: {
-                            isSecure: false,
-                            isHttpOnly: false,
-                            isSameSite: false,
+                            isSecure: true,
+                            isHttpOnly: true,
+                            isSameSite: 'Strict',
                             path: null,
                             domain: null,
                             ttl: null,
@@ -540,9 +540,9 @@ describe('Definitions', () => {
                         name: 'a@',
                         value: '1',
                         settings: {
-                            isSecure: false,
-                            isHttpOnly: false,
-                            isSameSite: false,
+                            isSecure: true,
+                            isHttpOnly: true,
+                            isSameSite: 'Strict',
                             path: null,
                             domain: null,
                             ttl: null,
@@ -556,9 +556,9 @@ describe('Definitions', () => {
                         name: 'b@',
                         value: '2',
                         settings: {
-                            isSecure: false,
-                            isHttpOnly: false,
-                            isSameSite: false,
+                            isSecure: true,
+                            isHttpOnly: true,
+                            isSameSite: 'Strict',
                             path: null,
                             domain: null,
                             ttl: null,
@@ -609,9 +609,9 @@ describe('Definitions', () => {
                         settings: {
                             strictHeader: true,
                             ignoreErrors: false,
-                            isSecure: false,
-                            isHttpOnly: false,
-                            isSameSite: false,
+                            isSecure: true,
+                            isHttpOnly: true,
+                            isSameSite: 'Strict',
                             path: null,
                             domain: null,
                             ttl: null,
@@ -805,11 +805,11 @@ describe('Definitions', () => {
         it('formats a header', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: 3600, isSecure: true, isHttpOnly: true, isSameSite: 'Strict', path: '/', domain: 'example.com' } }, (err, header) => {
+            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: 3600, isSameSite: 'Lax', path: '/', domain: 'example.com' } }, (err, header) => {
 
                 const expires = new Date(Date.now() + 3600);
                 expect(err).to.not.exist();
-                expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; SameSite=Strict; Domain=example.com; Path=/');
+                expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; SameSite=Lax; Domain=example.com; Path=/');
                 done();
             });
         });
@@ -817,10 +817,10 @@ describe('Definitions', () => {
         it('formats a header (with null ttl)', (done) => {
 
             const definitions = new Statehood.Definitions({ ttl: 3600 });
-            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: null, isSecure: true, isHttpOnly: true, path: '/', domain: 'example.com' } }, (err, header) => {
+            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: null, path: '/', domain: 'example.com' } }, (err, header) => {
 
                 expect(err).to.not.exist();
-                expect(header[0]).to.equal('sid=fihfieuhr9384hf; Secure; HttpOnly; Domain=example.com; Path=/');
+                expect(header[0]).to.equal('sid=fihfieuhr9384hf; Secure; HttpOnly; SameSite=Strict; Domain=example.com; Path=/');
                 done();
             });
         });
@@ -828,10 +828,10 @@ describe('Definitions', () => {
         it('formats a header (with zero ttl)', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: 0, isSecure: true, isHttpOnly: true, path: '/', domain: 'example.com' } }, (err, header) => {
+            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: 0, path: '/', domain: 'example.com' } }, (err, header) => {
 
                 expect(err).to.not.exist();
-                expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; HttpOnly; Domain=example.com; Path=/');
+                expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; HttpOnly; SameSite=Strict; Domain=example.com; Path=/');
                 done();
             });
         });
@@ -839,11 +839,11 @@ describe('Definitions', () => {
         it('formats a header with null value', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.format({ name: 'sid', options: { ttl: 3600, isSecure: true, isHttpOnly: true, path: '/', domain: 'example.com' } }, (err, header) => {
+            definitions.format({ name: 'sid', options: { ttl: 3600, path: '/', domain: 'example.com' } }, (err, header) => {
 
                 const expires = new Date(Date.now() + 3600);
                 expect(err).to.not.exist();
-                expect(header[0]).to.equal('sid=; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; Domain=example.com; Path=/');
+                expect(header[0]).to.equal('sid=; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; SameSite=Strict; Domain=example.com; Path=/');
                 done();
             });
         });
@@ -851,12 +851,12 @@ describe('Definitions', () => {
         it('formats a header with server definition', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.add('sid', { ttl: 3600, isSecure: true, isHttpOnly: true, path: '/', domain: 'example.com' });
+            definitions.add('sid', { ttl: 3600, path: '/', domain: 'example.com' });
             definitions.format({ name: 'sid', value: 'fihfieuhr9384hf' }, (err, header) => {
 
                 const expires = new Date(Date.now() + 3600);
                 expect(err).to.not.exist();
-                expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; Domain=example.com; Path=/');
+                expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; SameSite=Strict; Domain=example.com; Path=/');
                 done();
             });
         });
@@ -868,7 +868,7 @@ describe('Definitions', () => {
             definitions.format({ name: 'sid', value: 'fihfieuhr9384hf' }, (err, header) => {
 
                 expect(err).to.not.exist();
-                expect(header[0]).to.equal('sid=ZmloZmlldWhyOTM4NGhm');
+                expect(header[0]).to.equal('sid=ZmloZmlldWhyOTM4NGhm; Secure; HttpOnly; SameSite=Strict');
                 done();
             });
         });
@@ -880,7 +880,7 @@ describe('Definitions', () => {
             definitions.format({ name: 'sid', value: { a: 1, b: 2, c: 3 } }, (err, header) => {
 
                 expect(err).to.not.exist();
-                expect(header[0]).to.equal('sid=eyJhIjoxLCJiIjoyLCJjIjozfQ==');
+                expect(header[0]).to.equal('sid=eyJhIjoxLCJiIjoyLCJjIjozfQ==; Secure; HttpOnly; SameSite=Strict');
                 done();
             });
         });
@@ -903,7 +903,13 @@ describe('Definitions', () => {
         it('formats a header with server definition (form)', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.add('sid', { encoding: 'form' });
+            definitions.add('sid', {
+                encoding: 'form',
+                isSecure: false,
+                isHttpOnly: false,
+                isSameSite: false
+            });
+
             definitions.format({ name: 'sid', value: { a: 1, b: 2, c: '3 x' } }, (err, header) => {
 
                 expect(err).to.not.exist();
@@ -917,6 +923,9 @@ describe('Definitions', () => {
             const definitions = new Statehood.Definitions();
             definitions.add('sid', {
                 encoding: 'form',
+                isSameSite: false,
+                isSecure: false,
+                isHttpOnly: false,
                 sign: {
                     password,
                     integrity: {
@@ -941,6 +950,9 @@ describe('Definitions', () => {
             const definitions = new Statehood.Definitions();
             definitions.add('sid', {
                 encoding: 'form',
+                isSameSite: false,
+                isSecure: false,
+                isHttpOnly: false,
                 sign: {
                     password: buffer,
                     integrity: {
@@ -1026,14 +1038,14 @@ describe('Definitions', () => {
 
             const definitions = new Statehood.Definitions();
             definitions.format([
-                { name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: 3600, isSecure: true, isHttpOnly: true, path: '/', domain: 'example.com' } },
+                { name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: 3600, path: '/', domain: 'example.com' } },
                 { name: 'pid', value: 'xyz' }
             ], (err, header) => {
 
                 const expires = new Date(Date.now() + 3600);
                 expect(err).to.not.exist();
-                expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; Domain=example.com; Path=/');
-                expect(header[1]).to.equal('pid=xyz');
+                expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; SameSite=Strict; Domain=example.com; Path=/');
+                expect(header[1]).to.equal('pid=xyz; Secure; HttpOnly; SameSite=Strict');
                 done();
             });
         });
@@ -1041,7 +1053,7 @@ describe('Definitions', () => {
         it('fails on bad cookie name', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.format({ name: 's;id', value: 'fihfieuhr9384hf', options: { isSecure: true, isHttpOnly: false, path: '/', domain: 'example.com' } }, (err, header) => {
+            definitions.format({ name: 's;id', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: 'example.com' } }, (err, header) => {
 
                 expect(err).to.exist();
                 expect(err.message).to.equal('Invalid cookie name: s;id');
@@ -1052,10 +1064,10 @@ describe('Definitions', () => {
         it('allows bad cookie name in loose mode', (done) => {
 
             const definitions = new Statehood.Definitions({ strictHeader: false });
-            definitions.format({ name: 's;id', value: 'fihfieuhr9384hf', options: { isSecure: true, isHttpOnly: false, path: '/', domain: 'example.com' } }, (err, header) => {
+            definitions.format({ name: 's;id', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: 'example.com' } }, (err, header) => {
 
                 expect(err).to.not.exist();
-                expect(header[0]).to.equal('s;id=fihfieuhr9384hf; Secure; Domain=example.com; Path=/');
+                expect(header[0]).to.equal('s;id=fihfieuhr9384hf; Secure; SameSite=Strict; Domain=example.com; Path=/');
                 done();
             });
         });
@@ -1063,10 +1075,10 @@ describe('Definitions', () => {
         it('allows empty cookie name in loose mode', (done) => {
 
             const definitions = new Statehood.Definitions({ strictHeader: false });
-            definitions.format({ name: '', value: 'fihfieuhr9384hf', options: { isSecure: true, isHttpOnly: false, path: '/', domain: 'example.com' } }, (err, header) => {
+            definitions.format({ name: '', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: 'example.com' } }, (err, header) => {
 
                 expect(err).to.not.exist();
-                expect(header[0]).to.equal('=fihfieuhr9384hf; Secure; Domain=example.com; Path=/');
+                expect(header[0]).to.equal('=fihfieuhr9384hf; Secure; SameSite=Strict; Domain=example.com; Path=/');
                 done();
             });
         });
@@ -1075,10 +1087,10 @@ describe('Definitions', () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('s;id', { strictHeader: false });
-            definitions.format({ name: 's;id', value: 'fihfieuhr9384hf', options: { isSecure: true, isHttpOnly: false, path: '/', domain: 'example.com' } }, (err, header) => {
+            definitions.format({ name: 's;id', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: 'example.com' } }, (err, header) => {
 
                 expect(err).to.not.exist();
-                expect(header[0]).to.equal('s;id=fihfieuhr9384hf; Secure; Domain=example.com; Path=/');
+                expect(header[0]).to.equal('s;id=fihfieuhr9384hf; Secure; SameSite=Strict; Domain=example.com; Path=/');
                 done();
             });
         });
@@ -1086,7 +1098,7 @@ describe('Definitions', () => {
         it('fails on bad cookie value', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.format({ name: 'sid', value: 'fi"hfieuhr9384hf', options: { isSecure: true, isHttpOnly: false, path: '/', domain: 'example.com' } }, (err, header) => {
+            definitions.format({ name: 'sid', value: 'fi"hfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: 'example.com' } }, (err, header) => {
 
                 expect(err).to.exist();
                 expect(err.message).to.equal('Invalid cookie value: fi"hfieuhr9384hf');
@@ -1097,7 +1109,7 @@ describe('Definitions', () => {
         it('fails on bad cookie value (non string)', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.format({ name: 'sid', value: {}, options: { isSecure: true, isHttpOnly: false, path: '/', domain: 'example.com' } }, (err, header) => {
+            definitions.format({ name: 'sid', value: {}, options: { isHttpOnly: false, path: '/', domain: 'example.com' } }, (err, header) => {
 
                 expect(err).to.exist();
                 expect(err.message).to.equal('Invalid cookie value: [object Object]');
@@ -1108,10 +1120,10 @@ describe('Definitions', () => {
         it('allows bad cookie value in loose mode', (done) => {
 
             const definitions = new Statehood.Definitions({ strictHeader: false });
-            definitions.format({ name: 'sid', value: 'fi"hfieuhr9384hf', options: { isSecure: true, isHttpOnly: false, path: '/', domain: 'example.com' } }, (err, header) => {
+            definitions.format({ name: 'sid', value: 'fi"hfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: 'example.com' } }, (err, header) => {
 
                 expect(err).to.not.exist();
-                expect(header[0]).to.equal('sid=fi"hfieuhr9384hf; Secure; Domain=example.com; Path=/');
+                expect(header[0]).to.equal('sid=fi"hfieuhr9384hf; Secure; SameSite=Strict; Domain=example.com; Path=/');
                 done();
             });
         });
@@ -1119,7 +1131,7 @@ describe('Definitions', () => {
         it('fails on bad cookie domain', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isSecure: true, isHttpOnly: false, path: '/', domain: '-example.com' } }, (err, header) => {
+            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: '-example.com' } }, (err, header) => {
 
                 expect(err).to.exist();
                 expect(err.message).to.equal('Invalid cookie domain: -example.com');
@@ -1130,7 +1142,7 @@ describe('Definitions', () => {
         it('fails on too long cookie domain', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isSecure: true, isHttpOnly: false, path: '/', domain: '1234567890123456789012345678901234567890123456789012345678901234567890.example.com' } }, (err, header) => {
+            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: '1234567890123456789012345678901234567890123456789012345678901234567890.example.com' } }, (err, header) => {
 
                 expect(err).to.exist();
                 expect(err.message).to.equal('Cookie domain too long: 1234567890123456789012345678901234567890123456789012345678901234567890.example.com');
@@ -1141,7 +1153,7 @@ describe('Definitions', () => {
         it('formats a header with cookie domain with . prefix', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isSecure: true, isHttpOnly: false, path: '/', domain: '.12345678901234567890.example.com' } }, (err, header) => {
+            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: '.12345678901234567890.example.com' } }, (err, header) => {
 
                 expect(err).to.not.exist();
                 done();
@@ -1151,7 +1163,7 @@ describe('Definitions', () => {
         it('fails on bad cookie path', (done) => {
 
             const definitions = new Statehood.Definitions();
-            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isSecure: true, isHttpOnly: false, path: 'd', domain: 'example.com' } }, (err, header) => {
+            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: 'd', domain: 'example.com' } }, (err, header) => {
 
                 expect(err).to.exist();
                 expect(err.message).to.equal('Invalid cookie path: d');

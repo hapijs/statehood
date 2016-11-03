@@ -390,6 +390,32 @@ describe('Definitions', () => {
             });
         });
 
+        it('parses cookie (iron array)', (done) => {
+
+            const definitions = new Statehood.Definitions();
+            definitions.add('key', { encoding: 'iron', password, iron: Iron.defaults });
+            definitions.parse('key=Fe26.2**b2c8dd90b7d90d6881b28577ae26a3b001da4692d5158a3356cdb3e3226bd4d5*GluKNAVi_H6EvyNo-pPZAg*VTdzi3c2EdE7keMpJ7bWeQ**10b30a3b217af99c4ce0e9bd2b7060f0d0cebc8a4c2d26057d83c5c6f62606f6*KO6neEo8gdifE8zPNXCGZvgAzmHSrm64ECSHc2fAOqA; key=Fe26.2**f2a33694ff42a7f9b1c2539f798e482fc6abcb4dc4010bff0ebe08531642c086*4jkWFlBPCUzkNP-cCi5Vuw*9Dl2y0PJ5VngIg6jw9Ai3w**ac5c2f209e115b530fe2765471452a51eee169951d56724148ec57dcf7f37fa1*khzOdma_xHnnkcLsAiF58vyOMxmiDvJakLH0WfKkN9E', (err, states, failed) => {
+
+                expect(err).to.not.exist();
+                expect(failed).to.have.length(0);
+                expect(states).to.equal({ key: ['test1', 'test2'] });
+                done();
+            });
+        });
+
+        it('parses cookie (iron array with one valid and one invalid)', (done) => {
+
+            const definitions = new Statehood.Definitions();
+            definitions.add('key', { encoding: 'iron', password, iron: Iron.defaults });
+            definitions.parse('key=Fe26.2**e20b0f5870eef8bde58e79dd7b18ac1741e96058a767f01567ec81e61e02c365*OVMU0-_gQzItLkQrG1wtCQ*eDtH5LFkLJ1bu_kMiOna7A**df5ec6b468f5aef7a5c93794fc346852ef143fe10dd01a8af255fb2ed3a6eefd*EaoDWDDzA1GOJN8bg607JhX8Us5XTo7Xqvr-YBECxes; key=Fe26.2**e3bb1ff096f1f6cc39f02198617dedc0bb0f3db2090ecffe54c4e0d7f05071d5*WWCR6HVELSszlgVQKeJwkg*UHeqS46TMQsmNK_nmY8aug**aae27037c2588341fc0649db9335bf18a9b9bb1589cf4e6721ec4a6212d4a82a*ZOJXMFRbbaP-1VL6FK4zuris-CJDXuuMamRTXkTw_ZM', (err, states, failed) => {
+
+                expect(err).to.exist();
+                expect(failed).to.have.length(1);
+                expect(states).to.equal({ key: ['good'] });
+                done();
+            });
+        });
+
         it('parses cookie (signed form)', (done) => {
 
             const definitions = new Statehood.Definitions();

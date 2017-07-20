@@ -269,7 +269,7 @@ describe('Definitions', () => {
 
                 expect(err).to.not.exist();
                 expect(failed).to.have.length(0);
-                expect(states).to.equal({ '': { } });
+                expect(states).to.equal({ '': {} });
                 done();
             });
         });
@@ -616,6 +616,34 @@ describe('Definitions', () => {
 
                 expect(err).to.exist();
                 expect(err.message).to.equal('Invalid cookie header');
+                done();
+            });
+        });
+
+        it('fails parsing cookie (empty pair, ignoring errors)', (done) => {
+
+            const definitions = new Statehood.Definitions({ ignoreErrors: true });
+            definitions.parse('a=1; b=2; c=3;;', (err, states, failed) => {
+
+                expect(err).to.not.exist();
+                expect(states).to.equal({ a: '1', b: '2', c: '3' });
+                expect(failed).to.equal([
+                    {
+                        settings: {
+                            isSecure: true,
+                            isHttpOnly: true,
+                            isSameSite: 'Strict',
+                            path: null,
+                            domain: null,
+                            ttl: null,
+                            encoding: 'none',
+                            strictHeader: true,
+                            ignoreErrors: true
+                        },
+                        reason: 'Header contains unexpected syntax: ;'
+                    }
+                ]);
+
                 done();
             });
         });

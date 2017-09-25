@@ -16,9 +16,7 @@ const internals = {};
 
 // Test shortcuts
 
-const lab = exports.lab = Lab.script();
-const describe = lab.describe;
-const it = lab.it;
+const { describe, it } = exports.lab = Lab.script();
 const expect = Code.expect;
 
 
@@ -28,17 +26,16 @@ describe('Definitions', () => {
 
     describe('add()', () => {
 
-        it('throws on missing name', (done) => {
+        it('throws on missing name', async () => {
 
             const definitions = new Statehood.Definitions();
             expect(() => {
 
                 definitions.add();
             }).to.throw('Invalid name');
-            done();
         });
 
-        it('uses defaults', (done) => {
+        it('uses defaults', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('test');
@@ -53,18 +50,16 @@ describe('Definitions', () => {
                 ttl: null,
                 encoding: 'none'
             });
-            done();
         });
 
-        it('records name', (done) => {
+        it('records name', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('test');
             expect(definitions.names).to.equal(['test']);
-            done();
         });
 
-        it('adds definition with null value', (done) => {
+        it('adds definition with null value', async () => {
 
             const definitions = new Statehood.Definitions({ path: '/' });
 
@@ -73,873 +68,614 @@ describe('Definitions', () => {
 
             definitions.add('test', { path: null });
             expect(definitions.cookies.test.path).to.equal(null);
-
-            done();
         });
     });
 
     describe('parse()', () => {
 
-        it('parses cookie', (done) => {
+        it('parses cookie', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.parse('a=b', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ a: 'b' });
-                done();
-            });
+            const { states, failed } = await definitions.parse('a=b');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ a: 'b' });
         });
 
-        it('parses cookie (loose)', (done) => {
+        it('parses cookie (loose)', async () => {
 
             const definitions = new Statehood.Definitions({ strictHeader: false });
-            definitions.parse('a="1; b="2"; c=3; d[1]=4;=1', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ a: '"1', b: '2', c: '3', 'd[1]': '4', '': '1' });
-                done();
-            });
+            const { states, failed } = await definitions.parse('a="1; b="2"; c=3; d[1]=4;=1');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ a: '"1', b: '2', c: '3', 'd[1]': '4', '': '1' });
         });
 
-        it('parses cookie (empty)', (done) => {
+        it('parses cookie (empty)', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.parse('a=', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ a: '' });
-                done();
-            });
+            const { states, failed } = await definitions.parse('a=');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ a: '' });
         });
 
-        it('parses cookie (quoted empty)', (done) => {
+        it('parses cookie (quoted empty)', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.parse('a=""', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ a: '' });
-                done();
-            });
+            const { states, failed } = await definitions.parse('a=""');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ a: '' });
         });
 
-        it('parses cookie (semicolon single)', (done) => {
+        it('parses cookie (semicolon single)', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.parse('a=;', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ a: '' });
-                done();
-            });
+            const { states, failed } = await definitions.parse('a=;');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ a: '' });
         });
 
-        it('parses cookie (number)', (done) => {
+        it('parses cookie (number)', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.parse('a=23', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ a: '23' });
-                done();
-            });
+            const { states, failed } = await definitions.parse('a=23');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ a: '23' });
         });
 
-        it('parses cookie (array)', (done) => {
+        it('parses cookie (array)', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.parse('a=1; a=2', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ a: ['1', '2'] });
-                done();
-            });
+            const { states, failed } = await definitions.parse('a=1; a=2');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ a: ['1', '2'] });
         });
 
-        it('parses cookie (mixed style array)', (done) => {
+        it('parses cookie (mixed style array)', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.parse('a=1; b="2"; c=3', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ a: '1', b: '2', c: '3' });
-                done();
-            });
+            const { states, failed } = await definitions.parse('a=1; b="2"; c=3');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ a: '1', b: '2', c: '3' });
         });
 
-        it('parses cookie (mixed style array quoted first)', (done) => {
+        it('parses cookie (mixed style array quoted first)', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.parse('a="1"; b="2"; c=3', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ a: '1', b: '2', c: '3' });
-                done();
-            });
+            const { states, failed } = await definitions.parse('a="1"; b="2"; c=3');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ a: '1', b: '2', c: '3' });
         });
 
-        it('parses cookie (white space)', (done) => {
+        it('parses cookie (white space)', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.parse('A    = b;   b  =   c', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ A: 'b', b: 'c' });
-                done();
-            });
+            const { states, failed } = await definitions.parse('A    = b;   b  =   c');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ A: 'b', b: 'c' });
         });
 
-        it('parses cookie (raw form)', (done) => {
+        it('parses cookie (raw form)', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.parse('a="b=123456789&c=something"', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ a: 'b=123456789&c=something' });
-                done();
-            });
+            const { states, failed } = await definitions.parse('a="b=123456789&c=something"');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ a: 'b=123456789&c=something' });
         });
 
-        it('parses cookie (raw percent)', (done) => {
+        it('parses cookie (raw percent)', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.parse('a=%1;b=x', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ a: '%1', b: 'x' });
-                done();
-            });
+            const { states, failed } = await definitions.parse('a=%1;b=x');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ a: '%1', b: 'x' });
         });
 
-        it('parses cookie (raw encoded)', (done) => {
+        it('parses cookie (raw encoded)', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.parse('z=%20%22%2c%3b%2f', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ z: '%20%22%2c%3b%2f' });
-                done();
-            });
+            const { states, failed } = await definitions.parse('z=%20%22%2c%3b%2f');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ z: '%20%22%2c%3b%2f' });
         });
 
-        it('parses cookie (form single)', (done) => {
+        it('parses cookie (form single)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('a', { encoding: 'form' });
-            definitions.parse('a="b=%p123456789"', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ a: { b: '%p123456789' } });
-                done();
-            });
+            const { states, failed } = await definitions.parse('a="b=%p123456789"');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ a: { b: '%p123456789' } });
         });
 
-        it('parses cookie (form multiple)', (done) => {
+        it('parses cookie (form multiple)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('a', { encoding: 'form' });
-            definitions.parse('a="b=123456789&c=something%20else"', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ a: { b: '123456789', c: 'something else' } });
-                done();
-            });
+            const { states, failed } = await definitions.parse('a="b=123456789&c=something%20else"');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ a: { b: '123456789', c: 'something else' } });
         });
 
-        it('parses cookie with an empty key-value on non-strict header (form single)', (done) => {
+        it('parses cookie with an empty key-value on non-strict header (form single)', async () => {
 
             const definitions = new Statehood.Definitions({ strictHeader: false, encoding: 'form' });
-            definitions.parse('=', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ '': {} });
-                done();
-            });
+            const { states, failed } = await definitions.parse('=');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ '': {} });
         });
 
-        it('parses cookie (base64 array 2)', (done) => {
+        it('parses cookie (base64 array 2)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('a', { encoding: 'base64' });
-            definitions.parse('a=dGVzdA; a=dGVzdA', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ a: ['test', 'test'] });
-                done();
-            });
+            const { states, failed } = await definitions.parse('a=dGVzdA; a=dGVzdA');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ a: ['test', 'test'] });
         });
 
-        it('parses cookie (base64 array 3)', (done) => {
+        it('parses cookie (base64 array 3)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('a', { encoding: 'base64' });
-            definitions.parse('a=dGVzdA; a=dGVzdA; a=dGVzdA', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ a: ['test', 'test', 'test'] });
-                done();
-            });
+            const { states, failed } = await definitions.parse('a=dGVzdA; a=dGVzdA; a=dGVzdA');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ a: ['test', 'test', 'test'] });
         });
 
-        it('parses cookie (base64 padding)', (done) => {
+        it('parses cookie (base64 padding)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('key', { encoding: 'base64' });
-            definitions.parse('key=dGVzdA==', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ key: 'test' });
-                done();
-            });
+            const { states, failed } = await definitions.parse('key=dGVzdA==');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ key: 'test' });
         });
 
-        it('parses cookie (base64)', (done) => {
+        it('parses cookie (base64)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('key', { encoding: 'base64' });
-            definitions.parse('key=dGVzdA', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ key: 'test' });
-                done();
-            });
+            const { states, failed } = await definitions.parse('key=dGVzdA');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ key: 'test' });
         });
 
-        it('parses cookie (none encoding)', (done) => {
+        it('parses cookie (none encoding)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('key', { encoding: 'none' });
-            definitions.parse('key=dGVzdA', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ key: 'dGVzdA' });
-                done();
-            });
+            const { states, failed } = await definitions.parse('key=dGVzdA');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ key: 'dGVzdA' });
         });
 
-        it('parses cookie with an empty key-value on non-strict header (none encoding)', (done) => {
+        it('parses cookie with an empty key-value on non-strict header (none encoding)', async () => {
 
             const definitions = new Statehood.Definitions({ strictHeader: false, encoding: 'none' });
-            definitions.parse('=', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ '': '' });
-                done();
-            });
+            const { states, failed } = await definitions.parse('=');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ '': '' });
         });
 
-        it('parses cookie (base64json)', (done) => {
+        it('parses cookie (base64json)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('key', { encoding: 'base64json' });
-            definitions.parse('key=eyJ0ZXN0aW5nIjoianNvbiJ9', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ key: { testing: 'json' } });
-                done();
-            });
+            const { states, failed } = await definitions.parse('key=eyJ0ZXN0aW5nIjoianNvbiJ9');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ key: { testing: 'json' } });
         });
 
-        it('parses cookie (iron)', (done) => {
+        it('parses cookie (iron)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('key', { encoding: 'iron', password });
-            definitions.parse('key=Fe26.2**8ec29d2e64ab19a0429faab76c46167c933b7c2c94dac8022bb4c97de0fc359d*O2aDw2nk5Svfc4xiuatycw*DWWOPpI3-B6Bb4oOOuNxGT8v9S4jZ_hpQZaaeYREvuk**34d98c193fd2048b40655966115d75dae62aab96cd1f5b374908b86fc47a61d3*H_zsHSt6UoOj3QgBIuNMrNHAUosM6Sp51uLKak0ZUjg', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ key: { a: 1, b: 2, c: 3 } });
-                done();
-            });
+            const { states, failed } = await definitions.parse('key=Fe26.2**8ec29d2e64ab19a0429faab76c46167c933b7c2c94dac8022bb4c97de0fc359d*O2aDw2nk5Svfc4xiuatycw*DWWOPpI3-B6Bb4oOOuNxGT8v9S4jZ_hpQZaaeYREvuk**34d98c193fd2048b40655966115d75dae62aab96cd1f5b374908b86fc47a61d3*H_zsHSt6UoOj3QgBIuNMrNHAUosM6Sp51uLKak0ZUjg');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ key: { a: 1, b: 2, c: 3 } });
         });
 
-        it('parses cookie (iron settings)', (done) => {
+        it('parses cookie (iron settings)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('key', { encoding: 'iron', password, iron: Iron.defaults });
-            definitions.parse('key=Fe26.2**8ec29d2e64ab19a0429faab76c46167c933b7c2c94dac8022bb4c97de0fc359d*O2aDw2nk5Svfc4xiuatycw*DWWOPpI3-B6Bb4oOOuNxGT8v9S4jZ_hpQZaaeYREvuk**34d98c193fd2048b40655966115d75dae62aab96cd1f5b374908b86fc47a61d3*H_zsHSt6UoOj3QgBIuNMrNHAUosM6Sp51uLKak0ZUjg', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ key: { a: 1, b: 2, c: 3 } });
-                done();
-            });
+            const { states, failed } = await definitions.parse('key=Fe26.2**8ec29d2e64ab19a0429faab76c46167c933b7c2c94dac8022bb4c97de0fc359d*O2aDw2nk5Svfc4xiuatycw*DWWOPpI3-B6Bb4oOOuNxGT8v9S4jZ_hpQZaaeYREvuk**34d98c193fd2048b40655966115d75dae62aab96cd1f5b374908b86fc47a61d3*H_zsHSt6UoOj3QgBIuNMrNHAUosM6Sp51uLKak0ZUjg');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ key: { a: 1, b: 2, c: 3 } });
         });
 
-        it('parses cookie (iron array)', (done) => {
+        it('parses cookie (iron array)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('key', { encoding: 'iron', password, iron: Iron.defaults });
-            definitions.parse('key=Fe26.2**b2c8dd90b7d90d6881b28577ae26a3b001da4692d5158a3356cdb3e3226bd4d5*GluKNAVi_H6EvyNo-pPZAg*VTdzi3c2EdE7keMpJ7bWeQ**10b30a3b217af99c4ce0e9bd2b7060f0d0cebc8a4c2d26057d83c5c6f62606f6*KO6neEo8gdifE8zPNXCGZvgAzmHSrm64ECSHc2fAOqA; key=Fe26.2**f2a33694ff42a7f9b1c2539f798e482fc6abcb4dc4010bff0ebe08531642c086*4jkWFlBPCUzkNP-cCi5Vuw*9Dl2y0PJ5VngIg6jw9Ai3w**ac5c2f209e115b530fe2765471452a51eee169951d56724148ec57dcf7f37fa1*khzOdma_xHnnkcLsAiF58vyOMxmiDvJakLH0WfKkN9E', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ key: ['test1', 'test2'] });
-                done();
-            });
+            const { states, failed } = await definitions.parse('key=Fe26.2**b2c8dd90b7d90d6881b28577ae26a3b001da4692d5158a3356cdb3e3226bd4d5*GluKNAVi_H6EvyNo-pPZAg*VTdzi3c2EdE7keMpJ7bWeQ**10b30a3b217af99c4ce0e9bd2b7060f0d0cebc8a4c2d26057d83c5c6f62606f6*KO6neEo8gdifE8zPNXCGZvgAzmHSrm64ECSHc2fAOqA; key=Fe26.2**f2a33694ff42a7f9b1c2539f798e482fc6abcb4dc4010bff0ebe08531642c086*4jkWFlBPCUzkNP-cCi5Vuw*9Dl2y0PJ5VngIg6jw9Ai3w**ac5c2f209e115b530fe2765471452a51eee169951d56724148ec57dcf7f37fa1*khzOdma_xHnnkcLsAiF58vyOMxmiDvJakLH0WfKkN9E');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ key: ['test1', 'test2'] });
         });
 
-        it('parses cookie (iron array with one valid and one invalid)', (done) => {
+        it('parses cookie (iron array with one valid and one invalid)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('key', { encoding: 'iron', password, iron: Iron.defaults });
-            definitions.parse('key=Fe26.2**e20b0f5870eef8bde58e79dd7b18ac1741e96058a767f01567ec81e61e02c365*OVMU0-_gQzItLkQrG1wtCQ*eDtH5LFkLJ1bu_kMiOna7A**df5ec6b468f5aef7a5c93794fc346852ef143fe10dd01a8af255fb2ed3a6eefd*EaoDWDDzA1GOJN8bg607JhX8Us5XTo7Xqvr-YBECxes; key=Fe26.2**e3bb1ff096f1f6cc39f02198617dedc0bb0f3db2090ecffe54c4e0d7f05071d5*WWCR6HVELSszlgVQKeJwkg*UHeqS46TMQsmNK_nmY8aug**aae27037c2588341fc0649db9335bf18a9b9bb1589cf4e6721ec4a6212d4a82a*ZOJXMFRbbaP-1VL6FK4zuris-CJDXuuMamRTXkTw_ZM', (err, states, failed) => {
-
-                expect(err).to.exist();
-                expect(failed).to.have.length(1);
-                expect(states).to.equal({ key: ['good'] });
-                done();
-            });
+            const err = await expect(definitions.parse('key=Fe26.2**e20b0f5870eef8bde58e79dd7b18ac1741e96058a767f01567ec81e61e02c365*OVMU0-_gQzItLkQrG1wtCQ*eDtH5LFkLJ1bu_kMiOna7A**df5ec6b468f5aef7a5c93794fc346852ef143fe10dd01a8af255fb2ed3a6eefd*EaoDWDDzA1GOJN8bg607JhX8Us5XTo7Xqvr-YBECxes; key=Fe26.2**e3bb1ff096f1f6cc39f02198617dedc0bb0f3db2090ecffe54c4e0d7f05071d5*WWCR6HVELSszlgVQKeJwkg*UHeqS46TMQsmNK_nmY8aug**aae27037c2588341fc0649db9335bf18a9b9bb1589cf4e6721ec4a6212d4a82a*ZOJXMFRbbaP-1VL6FK4zuris-CJDXuuMamRTXkTw_ZM')).to.reject();
+            expect(err.failed).to.have.length(1);
+            expect(err.states).to.equal({ key: ['good'] });
         });
 
-        it('parses cookie (signed form)', (done) => {
+        it('parses cookie (signed form)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('sid', { encoding: 'form', sign: { password } });
 
-            definitions.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*anm-37hjjRC3eY7Mcv4gP7gXgXBKTtUz9fNFWnetEZo', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ sid: { a: '1', b: '2', c: '3 x' } });
-                done();
-            });
+            const { states, failed } = await definitions.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*anm-37hjjRC3eY7Mcv4gP7gXgXBKTtUz9fNFWnetEZo');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ sid: { a: '1', b: '2', c: '3 x' } });
         });
 
-        it('parses cookie (signed form integrity settings)', (done) => {
+        it('parses cookie (signed form integrity settings)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('sid', { encoding: 'form', sign: { password, integrity: Iron.defaults.integrity } });
-            definitions.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*anm-37hjjRC3eY7Mcv4gP7gXgXBKTtUz9fNFWnetEZo', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states.sid).to.equal({ a: '1', b: '2', c: '3 x' });
-                expect(states).to.equal({ sid: { a: '1', b: '2', c: '3 x' } });
-                done();
-            });
+            const { states, failed } = await definitions.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*anm-37hjjRC3eY7Mcv4gP7gXgXBKTtUz9fNFWnetEZo');
+            expect(failed).to.have.length(0);
+            expect(states.sid).to.equal({ a: '1', b: '2', c: '3 x' });
+            expect(states).to.equal({ sid: { a: '1', b: '2', c: '3 x' } });
         });
 
-        it('parses cookie (cookie level strict override)', (done) => {
+        it('parses cookie (cookie level strict override)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('a', { strictHeader: false });
-            definitions.parse('a="1', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.have.length(0);
-                expect(states).to.equal({ a: '"1' });
-                done();
-            });
+            const { states, failed } = await definitions.parse('a="1');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ a: '"1' });
         });
 
-        it('fails parsing cookie (mismatching quotes)', (done) => {
+        it('fails parsing cookie (mismatching quotes)', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.parse('a="1; b="2"; c=3', (err, states, failed) => {
+            const err = await expect(definitions.parse('a="1; b="2"; c=3')).to.reject();
 
-                expect(err).to.exist();
-                expect(err.data).to.equal([
-                    {
-                        name: 'a',
-                        value: '"1',
-                        settings: {
-                            isSecure: true,
-                            isHttpOnly: true,
-                            isSameSite: 'Strict',
-                            path: null,
-                            domain: null,
-                            ttl: null,
-                            encoding: 'none',
-                            strictHeader: true,
-                            ignoreErrors: false
-                        },
-                        reason: 'Invalid cookie value'
-                    }
-                ]);
+            expect(err.data).to.equal([
+                {
+                    name: 'a',
+                    value: '"1',
+                    settings: {
+                        isSecure: true,
+                        isHttpOnly: true,
+                        isSameSite: 'Strict',
+                        path: null,
+                        domain: null,
+                        ttl: null,
+                        encoding: 'none',
+                        strictHeader: true,
+                        ignoreErrors: false
+                    },
+                    reason: 'Invalid cookie value'
+                }
+            ]);
 
-                expect(failed).to.equal(err.data);
-
-                done();
-            });
+            expect(err.failed).to.equal(err.data);
         });
 
-        it('ignores failed parsing cookie (mismatching quotes)', (done) => {
+        it('ignores failed parsing cookie (mismatching quotes)', async () => {
 
             const definitions = new Statehood.Definitions({ ignoreErrors: true });
-            definitions.parse('a="1; b="2"; c=3', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(failed).to.equal([
-                    {
-                        name: 'a',
-                        value: '"1',
-                        settings: {
-                            isSecure: true,
-                            isHttpOnly: true,
-                            isSameSite: 'Strict',
-                            path: null,
-                            domain: null,
-                            ttl: null,
-                            encoding: 'none',
-                            strictHeader: true,
-                            ignoreErrors: true
-                        },
-                        reason: 'Invalid cookie value'
-                    }
-                ]);
-                done();
-            });
+            const { failed } = await definitions.parse('a="1; b="2"; c=3');
+            expect(failed).to.equal([
+                {
+                    name: 'a',
+                    value: '"1',
+                    settings: {
+                        isSecure: true,
+                        isHttpOnly: true,
+                        isSameSite: 'Strict',
+                        path: null,
+                        domain: null,
+                        ttl: null,
+                        encoding: 'none',
+                        strictHeader: true,
+                        ignoreErrors: true
+                    },
+                    reason: 'Invalid cookie value'
+                }
+            ]);
         });
 
-        it('ignores failed parsing cookie (cookie settings)', (done) => {
+        it('ignores failed parsing cookie (cookie settings)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('a', { ignoreErrors: true });
-            definitions.parse('a="1', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                done();
-            });
+            await expect(definitions.parse('a="1')).to.not.reject();
         });
 
-        it('fails parsing cookie (name)', (done) => {
+        it('fails parsing cookie (name)', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.parse('a@="1"; b="2"; c=3', (err, states, failed) => {
-
-                expect(err).to.exist();
-                expect(err.data).to.equal([
-                    {
-                        name: 'a@',
-                        value: '1',
-                        settings: {
-                            isSecure: true,
-                            isHttpOnly: true,
-                            isSameSite: 'Strict',
-                            path: null,
-                            domain: null,
-                            ttl: null,
-                            encoding: 'none',
-                            strictHeader: true,
-                            ignoreErrors: false
-                        },
-                        reason: 'Invalid cookie name'
-                    }
-                ]);
-                done();
-            });
-        });
-
-        it('fails parsing cookie (multiple)', (done) => {
-
-            const definitions = new Statehood.Definitions();
-            definitions.parse('a@="1"; b@="2"; c=3', (err, states, failed) => {
-
-                expect(err).to.exist();
-                expect(err.data).to.equal([
-                    {
-                        name: 'a@',
-                        value: '1',
-                        settings: {
-                            isSecure: true,
-                            isHttpOnly: true,
-                            isSameSite: 'Strict',
-                            path: null,
-                            domain: null,
-                            ttl: null,
-                            encoding: 'none',
-                            strictHeader: true,
-                            ignoreErrors: false
-                        },
-                        reason: 'Invalid cookie name'
+            const err = await expect(definitions.parse('a@="1"; b="2"; c=3')).to.reject();
+            expect(err.data).to.equal([
+                {
+                    name: 'a@',
+                    value: '1',
+                    settings: {
+                        isSecure: true,
+                        isHttpOnly: true,
+                        isSameSite: 'Strict',
+                        path: null,
+                        domain: null,
+                        ttl: null,
+                        encoding: 'none',
+                        strictHeader: true,
+                        ignoreErrors: false
                     },
-                    {
-                        name: 'b@',
-                        value: '2',
-                        settings: {
-                            isSecure: true,
-                            isHttpOnly: true,
-                            isSameSite: 'Strict',
-                            path: null,
-                            domain: null,
-                            ttl: null,
-                            encoding: 'none',
-                            strictHeader: true,
-                            ignoreErrors: false
-                        },
-                        reason: 'Invalid cookie name'
-                    }
-                ]);
-                done();
-            });
+                    reason: 'Invalid cookie name'
+                }
+            ]);
         });
 
-        it('ignores failed parsing cookie (name)', (done) => {
-
-            const definitions = new Statehood.Definitions({ ignoreErrors: true });
-            definitions.parse('a@="1"; b="2"; c=3', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                done();
-            });
-        });
-
-        it('fails parsing cookie (empty pair)', (done) => {
+        it('fails parsing cookie (multiple)', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.parse('a=1; b=2; c=3;;', (err, states, failed) => {
-
-                expect(err).to.exist();
-                expect(err.message).to.equal('Invalid cookie header');
-                done();
-            });
+            const err = await expect(definitions.parse('a@="1"; b@="2"; c=3')).to.reject();
+            expect(err.data).to.equal([
+                {
+                    name: 'a@',
+                    value: '1',
+                    settings: {
+                        isSecure: true,
+                        isHttpOnly: true,
+                        isSameSite: 'Strict',
+                        path: null,
+                        domain: null,
+                        ttl: null,
+                        encoding: 'none',
+                        strictHeader: true,
+                        ignoreErrors: false
+                    },
+                    reason: 'Invalid cookie name'
+                },
+                {
+                    name: 'b@',
+                    value: '2',
+                    settings: {
+                        isSecure: true,
+                        isHttpOnly: true,
+                        isSameSite: 'Strict',
+                        path: null,
+                        domain: null,
+                        ttl: null,
+                        encoding: 'none',
+                        strictHeader: true,
+                        ignoreErrors: false
+                    },
+                    reason: 'Invalid cookie name'
+                }
+            ]);
         });
 
-        it('fails parsing cookie (empty pair, ignoring errors)', (done) => {
+        it('ignores failed parsing cookie (name)', async () => {
 
             const definitions = new Statehood.Definitions({ ignoreErrors: true });
-            definitions.parse('a=1; b=2; c=3;;', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                expect(states).to.equal({ a: '1', b: '2', c: '3' });
-                expect(failed).to.equal([
-                    {
-                        settings: {
-                            isSecure: true,
-                            isHttpOnly: true,
-                            isSameSite: 'Strict',
-                            path: null,
-                            domain: null,
-                            ttl: null,
-                            encoding: 'none',
-                            strictHeader: true,
-                            ignoreErrors: true
-                        },
-                        reason: 'Header contains unexpected syntax: ;'
-                    }
-                ]);
-
-                done();
-            });
+            await expect(definitions.parse('a@="1"; b="2"; c=3')).to.not.reject();
         });
 
-        it('fails parsing cookie (base64json)', (done) => {
+        it('fails parsing cookie (empty pair)', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.add('x', { encoding: 'base64json' });
-            definitions.parse('x=XeyJ0ZXN0aW5nIjoianNvbiJ9', (err, states, failed) => {
-
-                expect(err).to.exist();
-                expect(err.message).to.equal('Invalid cookie value');
-                expect(err.data).to.equal([
-                    {
-                        name: 'x',
-                        value: 'XeyJ0ZXN0aW5nIjoianNvbiJ9',
-                        settings: {
-                            strictHeader: true,
-                            ignoreErrors: false,
-                            isSecure: true,
-                            isHttpOnly: true,
-                            isSameSite: 'Strict',
-                            path: null,
-                            domain: null,
-                            ttl: null,
-                            encoding: 'base64json'
-                        },
-                        reason: err.data[0].reason
-                    }
-                ]);
-
-                done();
-            });
+            await expect(definitions.parse('a=1; b=2; c=3;;')).to.reject('Invalid cookie header');
         });
 
-        it('ignores failed parsing cookie (base64json)', (done) => {
+        it('fails parsing cookie (empty pair, ignoring errors)', async () => {
 
             const definitions = new Statehood.Definitions({ ignoreErrors: true });
-            definitions.add('x', { encoding: 'base64json' });
-            definitions.parse('x=XeyJ0ZXN0aW5nIjoianNvbiJ9', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                done();
-            });
+            const { states, failed } = await definitions.parse('a=1; b=2; c=3;;');
+            expect(states).to.equal({ a: '1', b: '2', c: '3' });
+            expect(failed).to.equal([
+                {
+                    settings: {
+                        isSecure: true,
+                        isHttpOnly: true,
+                        isSameSite: 'Strict',
+                        path: null,
+                        domain: null,
+                        ttl: null,
+                        encoding: 'none',
+                        strictHeader: true,
+                        ignoreErrors: true
+                    },
+                    reason: 'Header contains unexpected syntax: ;'
+                }
+            ]);
         });
 
-        it('fails parsing cookie (double base64json)', (done) => {
+        it('fails parsing cookie (base64json)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('x', { encoding: 'base64json' });
-            definitions.parse('x=XeyJ0ZXN0aW5nIjoianNvbiJ9; x=XeyJ0ZXN0aW5dnIjoianNvbiJ9', (err, states, failed) => {
-
-                expect(err).to.exist();
-                expect(err.message).to.equal('Invalid cookie value');
-                done();
-            });
+            const err = await expect(definitions.parse('x=XeyJ0ZXN0aW5nIjoianNvbiJ9')).to.reject('Invalid cookie value');
+            expect(err.data).to.equal([
+                {
+                    name: 'x',
+                    value: 'XeyJ0ZXN0aW5nIjoianNvbiJ9',
+                    settings: {
+                        strictHeader: true,
+                        ignoreErrors: false,
+                        isSecure: true,
+                        isHttpOnly: true,
+                        isSameSite: 'Strict',
+                        path: null,
+                        domain: null,
+                        ttl: null,
+                        encoding: 'base64json'
+                    },
+                    reason: err.data[0].reason
+                }
+            ]);
         });
 
-        it('ignores failed parsing cookie (double base64json)', (done) => {
+        it('ignores failed parsing cookie (base64json)', async () => {
 
             const definitions = new Statehood.Definitions({ ignoreErrors: true });
             definitions.add('x', { encoding: 'base64json' });
-            definitions.parse('x=XeyJ0ZXN0aW5nIjoianNvbiJ9; x=XeyJ0ZXN0aW5dnIjoianNvbiJ9', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                done();
-            });
+            await expect(definitions.parse('x=XeyJ0ZXN0aW5nIjoianNvbiJ9')).to.not.reject();
         });
 
-        it('fails parsing cookie (iron)', (done) => {
+        it('fails parsing cookie (double base64json)', async () => {
+
+            const definitions = new Statehood.Definitions();
+            definitions.add('x', { encoding: 'base64json' });
+            await expect(definitions.parse('x=XeyJ0ZXN0aW5nIjoianNvbiJ9; x=XeyJ0ZXN0aW5dnIjoianNvbiJ9')).to.reject('Invalid cookie value');
+        });
+
+        it('ignores failed parsing cookie (double base64json)', async () => {
+
+            const definitions = new Statehood.Definitions({ ignoreErrors: true });
+            definitions.add('x', { encoding: 'base64json' });
+            await expect(definitions.parse('x=XeyJ0ZXN0aW5nIjoianNvbiJ9; x=XeyJ0ZXN0aW5dnIjoianNvbiJ9')).to.not.reject();
+        });
+
+        it('fails parsing cookie (iron)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('key', { encoding: 'iron', password });
-            definitions.parse('key=Fe26.1**f3fc42242467f7a97c042be866a32c1e7645045c2cc085124eadc66d25fc8395*URXpH8k-R0d4O5bnY23fRQ*uq9rd8ZzdjZqUrq9P2Ci0yZ-EEUikGzxTLn6QTcJ0bc**3880c0ac8bab054f529afec8660ebbbbc8050e192e39e5d622e7ac312b9860d0*r_g7N9kJYqXDrFlvOnuKpfpEWwrJLOKMXEI43LAGeFg', (err, states, failed) => {
-
-                expect(err).to.exist();
-                expect(err.message).to.equal('Invalid cookie value');
-                done();
-            });
+            await expect(definitions.parse('key=Fe26.1**f3fc42242467f7a97c042be866a32c1e7645045c2cc085124eadc66d25fc8395*URXpH8k-R0d4O5bnY23fRQ*uq9rd8ZzdjZqUrq9P2Ci0yZ-EEUikGzxTLn6QTcJ0bc**3880c0ac8bab054f529afec8660ebbbbc8050e192e39e5d622e7ac312b9860d0*r_g7N9kJYqXDrFlvOnuKpfpEWwrJLOKMXEI43LAGeFg')).to.reject('Invalid cookie value');
         });
 
-        it('fails parsing cookie (iron password)', (done) => {
+        it('fails parsing cookie (iron password)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('key', { encoding: 'iron', password: 'passwordx' });
-            definitions.parse('key=Fe26.2**f3fc42242467f7a97c042be866a32c1e7645045c2cc085124eadc66d25fc8395*URXpH8k-R0d4O5bnY23fRQ*uq9rd8ZzdjZqUrq9P2Ci0yZ-EEUikGzxTLn6QTcJ0bc**3880c0ac8bab054f529afec8660ebbbbc8050e192e39e5d622e7ac312b9860d0*r_g7N9kJYqXDrFlvOnuKpfpEWwrJLOKMXEI43LAGeFg', (err, states, failed) => {
-
-                expect(err).to.exist();
-                expect(err.message).to.equal('Invalid cookie value');
-                done();
-            });
+            await expect(definitions.parse('key=Fe26.2**f3fc42242467f7a97c042be866a32c1e7645045c2cc085124eadc66d25fc8395*URXpH8k-R0d4O5bnY23fRQ*uq9rd8ZzdjZqUrq9P2Ci0yZ-EEUikGzxTLn6QTcJ0bc**3880c0ac8bab054f529afec8660ebbbbc8050e192e39e5d622e7ac312b9860d0*r_g7N9kJYqXDrFlvOnuKpfpEWwrJLOKMXEI43LAGeFg')).to.reject('Invalid cookie value');
         });
 
-        it('fails parsing cookie (signed form missing options)', (done) => {
+        it('fails parsing cookie (signed form missing options)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('sid', { encoding: 'form', sign: {} });
-            definitions.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*khsb8lmkNJS-iljqDKZDMmd__2PcHBz7Ksrc-48gZ-0', (err, states, failed) => {
-
-                expect(err).to.exist();
-                expect(err.message).to.equal('Invalid cookie value');
-                done();
-            });
+            await expect(definitions.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*khsb8lmkNJS-iljqDKZDMmd__2PcHBz7Ksrc-48gZ-0')).to.reject('Invalid cookie value');
         });
 
-        it('fails parsing cookie (signed form missing signature)', (done) => {
+        it('fails parsing cookie (signed form missing signature)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('sid', { encoding: 'form', sign: { password } });
-            definitions.parse('sid=a=1&b=2&c=3%20x', (err, states, failed) => {
-
-                expect(err).to.exist();
-                expect(err.message).to.equal('Invalid cookie value');
-                done();
-            });
+            await expect(definitions.parse('sid=a=1&b=2&c=3%20x')).to.reject('Invalid cookie value');
         });
 
-        it('ignores failed parsing cookie (signed form missing signature)', (done) => {
+        it('ignores failed parsing cookie (signed form missing signature)', async () => {
 
             const definitions = new Statehood.Definitions({ ignoreErrors: true });
             definitions.add('sid', { encoding: 'form', sign: { password } });
-            definitions.parse('sid=a=1&b=2&c=3%20x', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                done();
-            });
+            await expect(definitions.parse('sid=a=1&b=2&c=3%20x')).to.not.reject();
         });
 
-        it('fails parsing cookie (signed form missing signature double)', (done) => {
+        it('fails parsing cookie (signed form missing signature double)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('sid', { encoding: 'form', sign: { password } });
-            definitions.parse('sid=a=1&b=2&c=3%20x; sid=a=1&b=2&c=3%20x', (err, states, failed) => {
-
-                expect(err).to.exist();
-                expect(err.message).to.equal('Invalid cookie value');
-                done();
-            });
+            await expect(definitions.parse('sid=a=1&b=2&c=3%20x; sid=a=1&b=2&c=3%20x')).to.reject('Invalid cookie value');
         });
 
-        it('ignores failed parsing cookie (signed form missing signature double)', (done) => {
+        it('ignores failed parsing cookie (signed form missing signature double)', async () => {
 
             const definitions = new Statehood.Definitions({ ignoreErrors: true });
             definitions.add('sid', { encoding: 'form', sign: { password } });
-            definitions.parse('sid=a=1&b=2&c=3%20x; sid=a=1&b=2&c=3%20x', (err, states, failed) => {
-
-                expect(err).to.not.exist();
-                done();
-            });
+            await expect(definitions.parse('sid=a=1&b=2&c=3%20x; sid=a=1&b=2&c=3%20x')).to.not.reject();
         });
 
-        it('fails parsing cookie (signed form missing signature with sep)', (done) => {
+        it('fails parsing cookie (signed form missing signature with sep)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('sid', { encoding: 'form', sign: { password } });
-            definitions.parse('sid=a=1&b=2&c=3%20x.', (err, states, failed) => {
-
-                expect(err).to.exist();
-                expect(err.message).to.equal('Invalid cookie value');
-                done();
-            });
+            await expect(definitions.parse('sid=a=1&b=2&c=3%20x.')).to.reject('Invalid cookie value');
         });
 
-        it('fails parsing cookie (signed form invalid signature)', (done) => {
+        it('fails parsing cookie (signed form invalid signature)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('sid', { encoding: 'form', sign: { password } });
-            definitions.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8', (err, states, failed) => {
-
-                expect(err).to.exist();
-                expect(err.message).to.equal('Invalid cookie value');
-                done();
-            });
+            await expect(definitions.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8')).to.reject('Invalid cookie value');
         });
 
-        it('fails parsing cookie (signed form wrong signature)', (done) => {
+        it('fails parsing cookie (signed form wrong signature)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('sid', { encoding: 'form', sign: { password } });
-            definitions.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*-Ghc6WvkE55V-TzucCl0NVFmbijeCwgs5Hf5tAVbSUo', (err, states, failed) => {
-
-                expect(err).to.exist();
-                expect(err.message).to.equal('Invalid cookie value');
-                done();
-            });
+            await expect(definitions.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*-Ghc6WvkE55V-TzucCl0NVFmbijeCwgs5Hf5tAVbSUo')).to.reject('Invalid cookie value');
         });
     });
 
     describe('format()', () => {
 
-        it('skips an empty header', (done) => {
+        it('skips an empty header', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.format(null, (err, header) => {
-
-                expect(err).to.not.exist();
-                expect(header).to.equal([]);
-                done();
-            });
+            const header = await definitions.format(null);
+            expect(header).to.equal([]);
         });
 
-        it('skips an empty array', (done) => {
+        it('skips an empty array', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.format([], (err, header) => {
-
-                expect(err).to.not.exist();
-                expect(header).to.equal([]);
-                done();
-            });
+            const header = await definitions.format([]);
+            expect(header).to.equal([]);
         });
 
-        it('formats a header', (done) => {
+        it('formats a header', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: 3600, isSameSite: 'Lax', path: '/', domain: 'example.com' } }, (err, header) => {
-
-                const expires = new Date(Date.now() + 3600);
-                expect(err).to.not.exist();
-                expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; SameSite=Lax; Domain=example.com; Path=/');
-                done();
-            });
+            const header = await definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: 3600, isSameSite: 'Lax', path: '/', domain: 'example.com' } });
+            const expires = new Date(Date.now() + 3600);
+            expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; SameSite=Lax; Domain=example.com; Path=/');
         });
 
-        it('formats a header (with null ttl)', (done) => {
+        it('formats a header (with null ttl)', async () => {
 
             const definitions = new Statehood.Definitions({ ttl: 3600 });
-            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: null, path: '/', domain: 'example.com' } }, (err, header) => {
-
-                expect(err).to.not.exist();
-                expect(header[0]).to.equal('sid=fihfieuhr9384hf; Secure; HttpOnly; SameSite=Strict; Domain=example.com; Path=/');
-                done();
-            });
+            const header = await definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: null, path: '/', domain: 'example.com' } });
+            expect(header[0]).to.equal('sid=fihfieuhr9384hf; Secure; HttpOnly; SameSite=Strict; Domain=example.com; Path=/');
         });
 
-        it('formats a header (with zero ttl)', (done) => {
+        it('formats a header (with zero ttl)', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: 0, path: '/', domain: 'example.com' } }, (err, header) => {
-
-                expect(err).to.not.exist();
-                expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; HttpOnly; SameSite=Strict; Domain=example.com; Path=/');
-                done();
-            });
+            const header = await definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: 0, path: '/', domain: 'example.com' } });
+            expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=0; Expires=Thu, 01 Jan 1970 00:00:00 GMT; Secure; HttpOnly; SameSite=Strict; Domain=example.com; Path=/');
         });
 
-        it('formats a header with null value', (done) => {
+        it('formats a header with null value', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.format({ name: 'sid', options: { ttl: 3600, path: '/', domain: 'example.com' } }, (err, header) => {
-
-                const expires = new Date(Date.now() + 3600);
-                expect(err).to.not.exist();
-                expect(header[0]).to.equal('sid=; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; SameSite=Strict; Domain=example.com; Path=/');
-                done();
-            });
+            const header = await definitions.format({ name: 'sid', options: { ttl: 3600, path: '/', domain: 'example.com' } });
+            const expires = new Date(Date.now() + 3600);
+            expect(header[0]).to.equal('sid=; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; SameSite=Strict; Domain=example.com; Path=/');
         });
 
-        it('formats a header with server definition', (done) => {
+        it('formats a header with server definition', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('sid', { ttl: 3600, path: '/', domain: 'example.com' });
-            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf' }, (err, header) => {
-
-                const expires = new Date(Date.now() + 3600);
-                expect(err).to.not.exist();
-                expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; SameSite=Strict; Domain=example.com; Path=/');
-                done();
-            });
+            const header = await definitions.format({ name: 'sid', value: 'fihfieuhr9384hf' });
+            const expires = new Date(Date.now() + 3600);
+            expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; SameSite=Strict; Domain=example.com; Path=/');
         });
 
-        it('formats a header with server definition (base64)', (done) => {
+        it('formats a header with server definition (base64)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('sid', { encoding: 'base64' });
-            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf' }, (err, header) => {
-
-                expect(err).to.not.exist();
-                expect(header[0]).to.equal('sid=ZmloZmlldWhyOTM4NGhm; Secure; HttpOnly; SameSite=Strict');
-                done();
-            });
+            const header = await definitions.format({ name: 'sid', value: 'fihfieuhr9384hf' });
+            expect(header[0]).to.equal('sid=ZmloZmlldWhyOTM4NGhm; Secure; HttpOnly; SameSite=Strict');
         });
 
-        it('formats a header with server definition (base64json)', (done) => {
+        it('formats a header with server definition (base64json)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('sid', { encoding: 'base64json' });
-            definitions.format({ name: 'sid', value: { a: 1, b: 2, c: 3 } }, (err, header) => {
-
-                expect(err).to.not.exist();
-                expect(header[0]).to.equal('sid=eyJhIjoxLCJiIjoyLCJjIjozfQ==; Secure; HttpOnly; SameSite=Strict');
-                done();
-            });
+            const header = await definitions.format({ name: 'sid', value: { a: 1, b: 2, c: 3 } });
+            expect(header[0]).to.equal('sid=eyJhIjoxLCJiIjoyLCJjIjozfQ==; Secure; HttpOnly; SameSite=Strict');
         });
 
-        it('fails on a header with server definition and bad value (base64json)', (done) => {
+        it('fails on a header with server definition and bad value (base64json)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('sid', { encoding: 'base64json' });
@@ -947,14 +683,10 @@ describe('Definitions', () => {
             bad.b = bad.a;
             bad.a.x = bad.b;
 
-            definitions.format({ name: 'sid', value: bad }, (err, header) => {
-
-                expect(err).to.exist();
-                done();
-            });
+            await expect(definitions.format({ name: 'sid', value: bad })).to.reject();
         });
 
-        it('formats a header with server definition (form)', (done) => {
+        it('formats a header with server definition (form)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('sid', {
@@ -964,15 +696,11 @@ describe('Definitions', () => {
                 isSameSite: false
             });
 
-            definitions.format({ name: 'sid', value: { a: 1, b: 2, c: '3 x' } }, (err, header) => {
-
-                expect(err).to.not.exist();
-                expect(header[0]).to.equal('sid=a=1&b=2&c=3%20x');
-                done();
-            });
+            const header = await definitions.format({ name: 'sid', value: { a: 1, b: 2, c: '3 x' } });
+            expect(header[0]).to.equal('sid=a=1&b=2&c=3%20x');
         });
 
-        it('formats a header with server definition (form+sign)', (done) => {
+        it('formats a header with server definition (form+sign)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('sid', {
@@ -990,15 +718,11 @@ describe('Definitions', () => {
                     }
                 }
             });
-            definitions.format({ name: 'sid', value: { a: 1, b: 2, c: '3 x' } }, (err, header) => {
-
-                expect(err).to.not.exist();
-                expect(header[0]).to.equal('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*anm-37hjjRC3eY7Mcv4gP7gXgXBKTtUz9fNFWnetEZo');
-                done();
-            });
+            const header = await definitions.format({ name: 'sid', value: { a: 1, b: 2, c: '3 x' } });
+            expect(header[0]).to.equal('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*anm-37hjjRC3eY7Mcv4gP7gXgXBKTtUz9fNFWnetEZo');
         });
 
-        it('formats a header with server definition (form+sign, buffer password)', (done) => {
+        it('formats a header with server definition (form+sign, buffer password)', async () => {
 
             const buffer = new Buffer('fa4321e8c21b44a49d382fa7709226855f40eb23a32b2f642c3fd797c958718e', 'base64');
             const definitions = new Statehood.Definitions();
@@ -1017,321 +741,235 @@ describe('Definitions', () => {
                     }
                 }
             });
-            definitions.format({ name: 'sid', value: { a: 1, b: 2, c: '3 x' } }, (err, header) => {
-
-                expect(err).to.not.exist();
-                expect(header[0]).to.equal('sid=a=1&b=2&c=3%20x.*4wjD4tIxyiNW-rC3xBqL56TxUbb_aQT5PMykruWlR0Q');
-                done();
-            });
+            const header = await definitions.format({ name: 'sid', value: { a: 1, b: 2, c: '3 x' } });
+            expect(header[0]).to.equal('sid=a=1&b=2&c=3%20x.*4wjD4tIxyiNW-rC3xBqL56TxUbb_aQT5PMykruWlR0Q');
         });
 
-        it('fails a header with bad server definition (form+sign)', (done) => {
+        it('fails a header with bad server definition (form+sign)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('sid', {
                 encoding: 'form',
                 sign: {}
             });
-            definitions.format({ name: 'sid', value: { a: 1, b: 2, c: '3 x' } }, (err, header) => {
 
-                expect(err).to.exist();
-                expect(err.message).to.equal('Failed to sign cookie (sid) value: Empty password');
-                done();
-            });
+            const err = await expect(definitions.format({ name: 'sid', value: { a: 1, b: 2, c: '3 x' } })).to.reject();
+            expect(err.message).to.equal('Failed to encode cookie (sid) value: Empty password');
         });
 
-        it('formats a header with server definition (iron)', (done) => {
+        it('formats a header with server definition (iron)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('sid', { encoding: 'iron', password });
-            definitions.format({ name: 'sid', value: { a: 1, b: 2, c: 3 } }, (err, header) => {
-
-                expect(err).to.not.exist();
-                expect(header[0]).to.have.string('sid=Fe26.2*');
-                done();
-            });
+            const header = await definitions.format({ name: 'sid', value: { a: 1, b: 2, c: 3 } });
+            expect(header[0]).to.have.string('sid=Fe26.2*');
         });
 
-        it('formats a header with server definition (iron + options)', (done) => {
+        it('formats a header with server definition (iron + options)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('sid', { encoding: 'iron', password, iron: Iron.defaults });
-            definitions.format({ name: 'sid', value: { a: 1, b: 2, c: 3 } }, (err, header) => {
-
-                expect(err).to.not.exist();
-                expect(header[0]).to.have.string('sid=Fe26.2*');
-                done();
-            });
+            const header = await definitions.format({ name: 'sid', value: { a: 1, b: 2, c: 3 } });
+            expect(header[0]).to.have.string('sid=Fe26.2*');
         });
 
-        it('formats a header with server definition (iron + options, buffer password)', (done) => {
+        it('formats a header with server definition (iron + options, buffer password)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('sid', { encoding: 'iron', password: Cryptiles.randomBits(256), iron: Iron.defaults });
-            definitions.format({ name: 'sid', value: { a: 1, b: 2, c: 3 } }, (err, header) => {
-
-                expect(err).to.not.exist();
-                expect(header[0]).to.have.string('sid=Fe26.2*');
-                done();
-            });
+            const header = await definitions.format({ name: 'sid', value: { a: 1, b: 2, c: 3 } });
+            expect(header[0]).to.have.string('sid=Fe26.2*');
         });
 
-        it('fails a header with bad server definition (iron)', (done) => {
+        it('fails a header with bad server definition (iron)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('sid', { encoding: 'iron' });
-            definitions.format({ name: 'sid', value: { a: 1, b: 2, c: 3 } }, (err, header) => {
-
-                expect(err).to.exist();
-                expect(err.message).to.equal('Failed to encode cookie (sid) value: Empty password');
-                done();
-            });
+            const err = await expect(definitions.format({ name: 'sid', value: { a: 1, b: 2, c: 3 } })).to.reject();
+            expect(err.message).to.equal('Failed to encode cookie (sid) value: Empty password');
         });
 
-        it('formats a header with multiple cookies', (done) => {
+        it('formats a header with multiple cookies', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.format([
+            const header = await definitions.format([
                 { name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: 3600, path: '/', domain: 'example.com' } },
                 { name: 'pid', value: 'xyz' }
-            ], (err, header) => {
+            ]);
 
-                const expires = new Date(Date.now() + 3600);
-                expect(err).to.not.exist();
-                expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; SameSite=Strict; Domain=example.com; Path=/');
-                expect(header[1]).to.equal('pid=xyz; Secure; HttpOnly; SameSite=Strict');
-                done();
-            });
+            const expires = new Date(Date.now() + 3600);
+            expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; SameSite=Strict; Domain=example.com; Path=/');
+            expect(header[1]).to.equal('pid=xyz; Secure; HttpOnly; SameSite=Strict');
         });
 
-        it('fails on bad cookie name', (done) => {
+        it('fails on bad cookie name', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.format({ name: 's;id', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: 'example.com' } }, (err, header) => {
-
-                expect(err).to.exist();
-                expect(err.message).to.equal('Invalid cookie name: s;id');
-                done();
-            });
+            const err = await expect(definitions.format({ name: 's;id', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: 'example.com' } })).to.reject();
+            expect(err.message).to.equal('Invalid cookie name: s;id');
         });
 
-        it('allows bad cookie name in loose mode', (done) => {
+        it('allows bad cookie name in loose mode', async () => {
 
             const definitions = new Statehood.Definitions({ strictHeader: false });
-            definitions.format({ name: 's;id', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: 'example.com' } }, (err, header) => {
-
-                expect(err).to.not.exist();
-                expect(header[0]).to.equal('s;id=fihfieuhr9384hf; Secure; SameSite=Strict; Domain=example.com; Path=/');
-                done();
-            });
+            const header = await definitions.format({ name: 's;id', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: 'example.com' } });
+            expect(header[0]).to.equal('s;id=fihfieuhr9384hf; Secure; SameSite=Strict; Domain=example.com; Path=/');
         });
 
-        it('allows empty cookie name in loose mode', (done) => {
+        it('allows empty cookie name in loose mode', async () => {
 
             const definitions = new Statehood.Definitions({ strictHeader: false });
-            definitions.format({ name: '', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: 'example.com' } }, (err, header) => {
-
-                expect(err).to.not.exist();
-                expect(header[0]).to.equal('=fihfieuhr9384hf; Secure; SameSite=Strict; Domain=example.com; Path=/');
-                done();
-            });
+            const header = await definitions.format({ name: '', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: 'example.com' } });
+            expect(header[0]).to.equal('=fihfieuhr9384hf; Secure; SameSite=Strict; Domain=example.com; Path=/');
         });
 
-        it('allows bad cookie name in loose mode (cookie level)', (done) => {
+        it('allows bad cookie name in loose mode (cookie level)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('s;id', { strictHeader: false });
-            definitions.format({ name: 's;id', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: 'example.com' } }, (err, header) => {
-
-                expect(err).to.not.exist();
-                expect(header[0]).to.equal('s;id=fihfieuhr9384hf; Secure; SameSite=Strict; Domain=example.com; Path=/');
-                done();
-            });
+            const header = await definitions.format({ name: 's;id', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: 'example.com' } });
+            expect(header[0]).to.equal('s;id=fihfieuhr9384hf; Secure; SameSite=Strict; Domain=example.com; Path=/');
         });
 
-        it('fails on bad cookie value', (done) => {
+        it('fails on bad cookie value', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.format({ name: 'sid', value: 'fi"hfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: 'example.com' } }, (err, header) => {
-
-                expect(err).to.exist();
-                expect(err.message).to.equal('Invalid cookie value: fi"hfieuhr9384hf');
-                done();
-            });
+            const err = await expect(definitions.format({ name: 'sid', value: 'fi"hfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: 'example.com' } })).to.reject();
+            expect(err.message).to.equal('Invalid cookie value: fi"hfieuhr9384hf');
         });
 
-        it('fails on bad cookie value (non string)', (done) => {
+        it('fails on bad cookie value (non string)', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.format({ name: 'sid', value: {}, options: { isHttpOnly: false, path: '/', domain: 'example.com' } }, (err, header) => {
-
-                expect(err).to.exist();
-                expect(err.message).to.equal('Invalid cookie value: [object Object]');
-                done();
-            });
+            const err = await expect(definitions.format({ name: 'sid', value: {}, options: { isHttpOnly: false, path: '/', domain: 'example.com' } })).to.reject();
+            expect(err.message).to.equal('Invalid cookie value: [object Object]');
         });
 
-        it('allows bad cookie value in loose mode', (done) => {
+        it('allows bad cookie value in loose mode', async () => {
 
             const definitions = new Statehood.Definitions({ strictHeader: false });
-            definitions.format({ name: 'sid', value: 'fi"hfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: 'example.com' } }, (err, header) => {
-
-                expect(err).to.not.exist();
-                expect(header[0]).to.equal('sid=fi"hfieuhr9384hf; Secure; SameSite=Strict; Domain=example.com; Path=/');
-                done();
-            });
+            const header = await definitions.format({ name: 'sid', value: 'fi"hfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: 'example.com' } });
+            expect(header[0]).to.equal('sid=fi"hfieuhr9384hf; Secure; SameSite=Strict; Domain=example.com; Path=/');
         });
 
-        it('fails on bad cookie domain', (done) => {
+        it('fails on bad cookie domain', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: '-example.com' } }, (err, header) => {
-
-                expect(err).to.exist();
-                expect(err.message).to.equal('Invalid cookie domain: -example.com');
-                done();
-            });
+            await expect(definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: '-example.com' } })).to.reject('Invalid cookie domain: -example.com');
         });
 
-        it('fails on too long cookie domain', (done) => {
+        it('fails on too long cookie domain', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: '1234567890123456789012345678901234567890123456789012345678901234567890.example.com' } }, (err, header) => {
-
-                expect(err).to.exist();
-                expect(err.message).to.equal('Cookie domain too long: 1234567890123456789012345678901234567890123456789012345678901234567890.example.com');
-                done();
-            });
+            await expect(definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: '1234567890123456789012345678901234567890123456789012345678901234567890.example.com' } })).to.reject('Cookie domain too long: 1234567890123456789012345678901234567890123456789012345678901234567890.example.com');
         });
 
-        it('formats a header with cookie domain with . prefix', (done) => {
+        it('formats a header with cookie domain with . prefix', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: '.12345678901234567890.example.com' } }, (err, header) => {
-
-                expect(err).to.not.exist();
-                done();
-            });
+            const header = await definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: '/', domain: '.12345678901234567890.example.com' } });
+            expect(header).to.equal(['sid=fihfieuhr9384hf; Secure; SameSite=Strict; Domain=.12345678901234567890.example.com; Path=/']);
         });
 
-        it('fails on bad cookie path', (done) => {
+        it('fails on bad cookie path', async () => {
 
             const definitions = new Statehood.Definitions();
-            definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: 'd', domain: 'example.com' } }, (err, header) => {
-
-                expect(err).to.exist();
-                expect(err.message).to.equal('Invalid cookie path: d');
-                done();
-            });
+            await expect(definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: 'd', domain: 'example.com' } })).to.reject('Invalid cookie path: d');
         });
     });
 
     describe('passThrough()', () => {
 
-        it('returns header unchanged', (done) => {
+        it('returns header unchanged', async () => {
 
             const definitions = new Statehood.Definitions();
             const header = 'a=4;b=5;c=6';
             const result = definitions.passThrough(header);
             expect(result).to.equal(header);
-            done();
         });
 
-        it('returns header excluding local', (done) => {
+        it('returns header excluding local', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('b');
             const header = 'a=4;b=5;c=6';
             const result = definitions.passThrough(header);
             expect(result).to.equal('a=4;c=6');
-            done();
         });
 
-        it('returns header including local (fallback)', (done) => {
+        it('returns header including local (fallback)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('b');
             const header = 'a=4;b=5;c=6';
             const result = definitions.passThrough(header, true);
             expect(result).to.equal('a=4;b=5;c=6');
-            done();
         });
 
-        it('returns header including local (state option)', (done) => {
+        it('returns header including local (state option)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('b', { passThrough: true });
             const header = 'a=4;b=5;c=6';
             const result = definitions.passThrough(header);
             expect(result).to.equal('a=4;b=5;c=6');
-            done();
         });
 
-        it('returns header including local (state option with fallback)', (done) => {
+        it('returns header including local (state option with fallback)', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('b', { passThrough: false });
             const header = 'a=4;b=5;c=6';
             const result = definitions.passThrough(header, true);
             expect(result).to.equal('a=4;c=6');
-            done();
         });
 
-        it('errors on invalid header', (done) => {
+        it('errors on invalid header', async () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('b');
             const header = 'a=4;b=5;c=6;;';
             const result = definitions.passThrough(header);
             expect(result.message).to.equal('Invalid cookie header');
-            done();
         });
     });
 });
 
 describe('prepareValue()', () => {
 
-    it('throws when missing options', (done) => {
+    it('throws when missing options', async () => {
 
-        expect(() => {
-
-            Statehood.prepareValue('name', 'value');
-        }).to.throw('Missing or invalid options');
-        done();
+        await expect(Statehood.prepareValue('name', 'value')).to.reject('Missing or invalid options');
     });
 });
 
 describe('exclude()', () => {
 
-    it('returns all keys', (done) => {
+    it('returns all keys', async () => {
 
         const header = 'a=4;b=5;c=6';
         const result = Statehood.exclude(header, []);
         expect(result).to.equal(header);
-        done();
     });
 
-    it('returns keys without excluded', (done) => {
+    it('returns keys without excluded', async () => {
 
         const header = 'a=4;b=5;c=6';
         const result = Statehood.exclude(header, ['b']);
         expect(result).to.equal('a=4;c=6');
-        done();
     });
 
-    it('returns keys without excluded (empty name)', (done) => {
+    it('returns keys without excluded (empty name)', async () => {
 
         const header = '=4;b=5;c=6';
         const result = Statehood.exclude(header, ['']);
         expect(result).to.equal('b=5;c=6');
-        done();
     });
 
-    it('returns error on invalid header', (done) => {
+    it('returns error on invalid header', async () => {
 
         const header = 'a';
         const result = Statehood.exclude(header, ['b']);
         expect(result.message).to.equal('Invalid cookie header');
-        done();
     });
 });

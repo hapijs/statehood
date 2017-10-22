@@ -1,7 +1,7 @@
 {
   "name": "statehood",
   "description": "HTTP State Management Utilities",
-  "version": "6.0.1",
+  "version": "6.0.2",
   "repository": "git://github.com/hapijs/statehood",
   "main": "lib/index.js",
   "keywords": [
@@ -17,7 +17,7 @@
     "boom": "6.x.x",
     "hoek": "5.x.x",
     "iron": "5.x.x",
-    "joi": "11.x.x"
+    "joi": "13.x.x"
   },
   "devDependencies": {
     "code": "5.x.x",

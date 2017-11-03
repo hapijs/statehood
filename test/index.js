@@ -26,7 +26,7 @@ describe('Definitions', () => {
 
     describe('add()', () => {
 
-        it('throws on missing name', async () => {
+        it('throws on missing name', () => {
 
             const definitions = new Statehood.Definitions();
             expect(() => {
@@ -35,7 +35,7 @@ describe('Definitions', () => {
             }).to.throw('Invalid name');
         });
 
-        it('uses defaults', async () => {
+        it('uses defaults', () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('test');
@@ -52,14 +52,14 @@ describe('Definitions', () => {
             });
         });
 
-        it('records name', async () => {
+        it('records name', () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('test');
             expect(definitions.names).to.equal(['test']);
         });
 
-        it('adds definition with null value', async () => {
+        it('adds definition with null value', () => {
 
             const definitions = new Statehood.Definitions({ path: '/' });
 
@@ -880,7 +880,7 @@ describe('Definitions', () => {
 
     describe('passThrough()', () => {
 
-        it('returns header unchanged', async () => {
+        it('returns header unchanged', () => {
 
             const definitions = new Statehood.Definitions();
             const header = 'a=4;b=5;c=6';
@@ -888,7 +888,7 @@ describe('Definitions', () => {
             expect(result).to.equal(header);
         });
 
-        it('returns header excluding local', async () => {
+        it('returns header excluding local', () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('b');
@@ -897,7 +897,7 @@ describe('Definitions', () => {
             expect(result).to.equal('a=4;c=6');
         });
 
-        it('returns header including local (fallback)', async () => {
+        it('returns header including local (fallback)', () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('b');
@@ -906,7 +906,7 @@ describe('Definitions', () => {
             expect(result).to.equal('a=4;b=5;c=6');
         });
 
-        it('returns header including local (state option)', async () => {
+        it('returns header including local (state option)', () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('b', { passThrough: true });
@@ -915,7 +915,7 @@ describe('Definitions', () => {
             expect(result).to.equal('a=4;b=5;c=6');
         });
 
-        it('returns header including local (state option with fallback)', async () => {
+        it('returns header including local (state option with fallback)', () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('b', { passThrough: false });
@@ -924,7 +924,7 @@ describe('Definitions', () => {
             expect(result).to.equal('a=4;c=6');
         });
 
-        it('errors on invalid header', async () => {
+        it('errors on invalid header', () => {
 
             const definitions = new Statehood.Definitions();
             definitions.add('b');
@@ -945,28 +945,28 @@ describe('prepareValue()', () => {
 
 describe('exclude()', () => {
 
-    it('returns all keys', async () => {
+    it('returns all keys', () => {
 
         const header = 'a=4;b=5;c=6';
         const result = Statehood.exclude(header, []);
         expect(result).to.equal(header);
     });
 
-    it('returns keys without excluded', async () => {
+    it('returns keys without excluded', () => {
 
         const header = 'a=4;b=5;c=6';
         const result = Statehood.exclude(header, ['b']);
         expect(result).to.equal('a=4;c=6');
     });
 
-    it('returns keys without excluded (empty name)', async () => {
+    it('returns keys without excluded (empty name)', () => {
 
         const header = '=4;b=5;c=6';
         const result = Statehood.exclude(header, ['']);
         expect(result).to.equal('b=5;c=6');
     });
 
-    it('returns error on invalid header', async () => {
+    it('returns error on invalid header', () => {
 
         const header = 'a';
         const result = Statehood.exclude(header, ['b']);

@@ -724,7 +724,7 @@ describe('Definitions', () => {
 
         it('formats a header with server definition (form+sign, buffer password)', async () => {
 
-            const buffer = new Buffer('fa4321e8c21b44a49d382fa7709226855f40eb23a32b2f642c3fd797c958718e', 'base64');
+            const buffer = Buffer.from('fa4321e8c21b44a49d382fa7709226855f40eb23a32b2f642c3fd797c958718e', 'base64');
             const definitions = new Statehood.Definitions();
             definitions.add('sid', {
                 encoding: 'form',

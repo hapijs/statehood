@@ -230,6 +230,15 @@ describe('Definitions', () => {
             expect(states).to.equal({ key: 'test' });
         });
 
+        it('parses cookie (base64, empty)', async () => {
+
+            const definitions = new Statehood.Definitions();
+            definitions.add('key', { encoding: 'base64' });
+            const { states, failed } = await definitions.parse('key=');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ key: '' });
+        });
+
         it('parses cookie (base64)', async () => {
 
             const definitions = new Statehood.Definitions();
@@ -632,6 +641,13 @@ describe('Definitions', () => {
 
             const definitions = new Statehood.Definitions({ ttl: 3600 });
             const header = await definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: null, path: '/', domain: 'example.com' } });
+            expect(header[0]).to.equal('sid=fihfieuhr9384hf; Secure; HttpOnly; SameSite=Strict; Domain=example.com; Path=/');
+        });
+
+        it('formats a header (with explicitly undefined ttl)', async () => {
+
+            const definitions = new Statehood.Definitions({ ttl: 3600 });
+            const header = await definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: undefined, path: '/', domain: 'example.com' } });
             expect(header[0]).to.equal('sid=fihfieuhr9384hf; Secure; HttpOnly; SameSite=Strict; Domain=example.com; Path=/');
         });
 

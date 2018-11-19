@@ -5,6 +5,7 @@
 const Code = require('code');
 const Cryptiles = require('cryptiles');
 const Iron = require('iron');
+const Joi = require('joi');
 const Lab = require('lab');
 const Statehood = require('../');
 
@@ -610,6 +611,133 @@ describe('Definitions', () => {
             const definitions = new Statehood.Definitions();
             definitions.add('sid', { encoding: 'form', sign: { password } });
             await expect(definitions.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*-Ghc6WvkE55V-TzucCl0NVFmbijeCwgs5Hf5tAVbSUo')).to.reject('Invalid cookie value');
+        });
+
+        it('validates cookie values', async () => {
+
+            const definitions = new Statehood.Definitions();
+            const validate = Joi.string().valid('a');
+            definitions.add('a', { validate });
+            definitions.add('b', { validate: Joi.boolean() });
+
+            const err = await expect(definitions.parse('a=b; b=true')).to.reject('Invalid cookie value');
+            expect(err.failed).to.equal([
+                {
+                    name: 'a',
+                    value: 'b',
+                    settings: {
+                        isSecure: true,
+                        isHttpOnly: true,
+                        isSameSite: 'Strict',
+                        path: null,
+                        domain: null,
+                        ttl: null,
+                        encoding: 'none',
+                        strictHeader: true,
+                        ignoreErrors: false,
+                        validate
+                    },
+                    reason: '"value" must be one of [a]'
+                }
+            ]);
+            expect(err.states).to.equal({ b: true });
+        });
+
+        it('validates cookie values (base64)', async () => {
+
+            const definitions = new Statehood.Definitions();
+            const validate = Joi.string().valid('a');
+            definitions.add('a', { encoding: 'base64', validate });
+            definitions.add('b', { encoding: 'base64', validate: Joi.array().single() });
+
+            const err = await expect(definitions.parse('a=dGVzdA; b=dGVzdA')).to.reject('Invalid cookie value');
+            expect(err.failed).to.equal([
+                {
+                    name: 'a',
+                    value: 'dGVzdA',
+                    settings: {
+                        isSecure: true,
+                        isHttpOnly: true,
+                        isSameSite: 'Strict',
+                        path: null,
+                        domain: null,
+                        ttl: null,
+                        encoding: 'base64',
+                        strictHeader: true,
+                        ignoreErrors: false,
+                        validate
+                    },
+                    reason: '"value" must be one of [a]'
+                }
+            ]);
+            expect(err.states).to.equal({ b: ['test'] });
+        });
+
+        it('validates cookie values (base64 array)', async () => {
+
+            const definitions = new Statehood.Definitions();
+            const validate = Joi.array().items(Joi.boolean());
+            definitions.add('a', { encoding: 'base64', validate });
+            definitions.add('b', { encoding: 'base64', validate: Joi.array().items('test') });
+
+            const err = await expect(definitions.parse('a=dGVzdA; a=dGVzdA; b=dGVzdA; b=dGVzdA')).to.reject('Invalid cookie value');
+            expect(err.failed).to.equal([
+                {
+                    name: 'a',
+                    value: ['dGVzdA', 'dGVzdA'],
+                    settings: {
+                        isSecure: true,
+                        isHttpOnly: true,
+                        isSameSite: 'Strict',
+                        path: null,
+                        domain: null,
+                        ttl: null,
+                        encoding: 'base64',
+                        strictHeader: true,
+                        ignoreErrors: false,
+                        validate
+                    },
+                    reason: '"value" at position 0 fails because ["0" must be a boolean]'
+                }
+            ]);
+            expect(err.states).to.equal({ b: ['test', 'test'] });
+        });
+
+        it('validates missing cookie values', async () => {
+
+            const definitions = new Statehood.Definitions();
+            const validate = Joi.any().required();
+            definitions.add('required', { validate });
+            definitions.add('default', { validate: Joi.any().default('value') });
+            definitions.add('no-default', { validate: Joi.any() });
+            definitions.add('valid', { validate: Joi.string().valid('ok') });
+
+            const err = await expect(definitions.parse('valid=ok; unknown=accepted')).to.reject('Invalid cookie value');
+            expect(err.failed).to.equal([
+                {
+                    name: 'required',
+                    value: undefined,
+                    settings: {
+                        isSecure: true,
+                        isHttpOnly: true,
+                        isSameSite: 'Strict',
+                        path: null,
+                        domain: null,
+                        ttl: null,
+                        encoding: 'none',
+                        strictHeader: true,
+                        ignoreErrors: false,
+                        validate
+                    },
+                    reason: '"value" is required'
+                }
+            ]);
+            expect(err.states).to.equal({ valid: 'ok', unknown: 'accepted', default: 'value' });
+        });
+
+        it('does not allow a default validator', () => {
+
+            expect(() => new Statehood.Definitions({ validate: Joi.any() })).to.throw();
         });
     });
 

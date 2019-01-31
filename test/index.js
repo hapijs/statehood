@@ -521,6 +521,13 @@ describe('Definitions', () => {
             ]);
         });
 
+        it('fails parsing cookie (base64json with proto)', async () => {
+
+            const definitions = new Statehood.Definitions();
+            definitions.add('x', { encoding: 'base64json' });
+            await expect(definitions.parse('x=eyAiYSI6IDUsICJiIjogNiwgIl9fcHJvdG9fXyI6IHsgIngiOiA3IH0gfQ')).to.reject('Invalid cookie value');
+        });
+
         it('ignores failed parsing cookie (base64json)', async () => {
 
             const definitions = new Statehood.Definitions({ ignoreErrors: true });

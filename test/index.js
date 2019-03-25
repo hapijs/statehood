@@ -1,20 +1,14 @@
 'use strict';
 
-// Load modules
-
 const Code = require('code');
-const Cryptiles = require('cryptiles');
-const Iron = require('iron');
+const Cryptiles = require('@commercial/cryptiles');
+const Iron = require('@commercial/iron');
 const Lab = require('lab');
 const Statehood = require('../');
 
 
-// Declare internals
-
 const internals = {};
 
-
-// Test shortcuts
 
 const lab = exports.lab = Lab.script();
 const describe = lab.describe;

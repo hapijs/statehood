@@ -1,20 +1,14 @@
 'use strict';
 
-// Load modules
+const Code = require('@hapi/code');
+const Cryptiles = require('@hapi/cryptiles');
+const Iron = require('@hapi/iron');
+const Lab = require('@hapi/lab');
+const Statehood = require('..');
 
-const Code = require('code');
-const Cryptiles = require('cryptiles');
-const Iron = require('iron');
-const Lab = require('lab');
-const Statehood = require('../');
-
-
-// Declare internals
 
 const internals = {};
 
-
-// Test shortcuts
 
 const { describe, it } = exports.lab = Lab.script();
 const expect = Code.expect;

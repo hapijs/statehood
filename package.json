@@ -1,10 +1,15 @@
 {
   "name": "@hapi/statehood",
   "description": "HTTP State Management Utilities",
-  "version": "6.0.9",
+  "version": "6.1.0",
   "repository": "git://github.com/hapijs/statehood",
   "main": "lib/index.js",
-  "keywords": ["HTTP", "state", "cookies", "secure"],
+  "keywords": [
+    "HTTP",
+    "state",
+    "cookies",
+    "secure"
+  ],
   "dependencies": {
     "@hapi/boom": "7.x.x",
     "@hapi/bounce": "1.x.x",

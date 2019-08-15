@@ -15,13 +15,13 @@
     "@hapi/bounce": "1.x.x",
     "@hapi/bourne": "1.x.x",
     "@hapi/cryptiles": "4.x.x",
-    "@hapi/hoek": "6.x.x",
+    "@hapi/hoek": "8.x.x",
     "@hapi/iron": "5.x.x",
     "@hapi/joi": "15.x.x"
   },
   "devDependencies": {
-    "@hapi/code": "5.x.x",
-    "@hapi/lab": "18.x.x"
+    "@hapi/code": "6.x.x",
+    "@hapi/lab": "20.x.x"
   },
   "scripts": {
     "test": "lab -a @hapi/code -t 100 -L",

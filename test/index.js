@@ -638,6 +638,43 @@ describe('Definitions', () => {
             expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; SameSite=Lax; Domain=example.com; Path=/');
         });
 
+        it('formats a header (SameSite: None)', async () => {
+
+            const definitions = new Statehood.Definitions();
+            const header = await definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: 3600, isSameSite: 'None', path: '/', domain: 'example.com' } });
+            const expires = new Date(Date.now() + 3600);
+            expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; SameSite=None; Domain=example.com; Path=/');
+        });
+
+        it('formats a header (contextualize)', async () => {
+
+            const definitions = new Statehood.Definitions();
+            const contextualize = (definition, context) => {
+
+                definition.isSameSite = context;
+            };
+
+            const header = await definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { ttl: 3600, contextualize, path: '/', domain: 'example.com' } }, 'TEST');
+            const expires = new Date(Date.now() + 3600);
+            expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; SameSite=TEST; Domain=example.com; Path=/');
+        });
+
+        it('formats a header (contextualize with defaults)', async () => {
+
+            const contextualize = (definition, context) => {
+
+                definition.isSameSite = context;
+            };
+
+            const definitions = new Statehood.Definitions({ ttl: 3600, contextualize, path: '/', domain: 'example.com' });
+
+            const header = await definitions.format({ name: 'sid', value: 'fihfieuhr9384hf' }, 'TEST');
+            const expires = new Date(Date.now() + 3600);
+            expect(header[0]).to.equal('sid=fihfieuhr9384hf; Max-Age=3; Expires=' + expires.toUTCString() + '; Secure; HttpOnly; SameSite=TEST; Domain=example.com; Path=/');
+
+            expect(definitions.settings.isSameSite).to.equal('Strict');
+        });
+
         it('formats a header (with null ttl)', async () => {
 
             const definitions = new Statehood.Definitions({ ttl: 3600 });

@@ -2,4 +2,4 @@
 
 # @hapi/statehood
 
-HTTP State Management Utilities.
+#### HTTP State Management Utilities.

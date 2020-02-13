@@ -612,6 +612,12 @@ describe('Definitions', () => {
             definitions.add('sid', { encoding: 'form', sign: { password } });
             await expect(definitions.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*-Ghc6WvkE55V-TzucCl0NVFmbijeCwgs5Hf5tAVbSUo')).to.reject('Invalid cookie value');
         });
+
+        it('errors on __proto__ cookie', async () => {
+
+            const definitions = new Statehood.Definitions();
+            await expect(definitions.parse('__proto__=b')).to.reject('Invalid cookie header');
+        });
     });
 
     describe('format()', () => {

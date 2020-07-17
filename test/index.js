@@ -1,8 +1,8 @@
 'use strict';
 
 const Code = require('@hapi/code');
-const Cryptiles = require('@hapi/cryptiles');
-const Iron = require('@hapi/iron');
+const Cryptiles = require('@commercial/cryptiles');
+const Iron = require('@commercial/iron');
 const Lab = require('@hapi/lab');
 const Statehood = require('..');
 

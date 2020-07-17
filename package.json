@@ -1,8 +1,11 @@
 {
-  "name": "@hapi/statehood",
+  "name": "@commercial/statehood",
   "description": "HTTP State Management Utilities",
   "version": "7.0.2",
   "repository": "git://github.com/hapijs/statehood",
+  "engines": {
+    "node": ">=12.0.0"
+  },
   "main": "lib/index.js",
   "files": [
     "lib"
@@ -14,13 +17,13 @@
     "secure"
   ],
   "dependencies": {
-    "@hapi/boom": "9.x.x",
-    "@hapi/bounce": "2.x.x",
-    "@hapi/bourne": "2.x.x",
-    "@hapi/cryptiles": "5.x.x",
-    "@hapi/hoek": "9.x.x",
-    "@hapi/iron": "6.x.x",
-    "@hapi/joi": "17.x.x"
+    "@commercial/boom": "9.x.x",
+    "@commercial/bounce": "2.x.x",
+    "@commercial/bourne": "2.x.x",
+    "@commercial/cryptiles": "5.x.x",
+    "@commercial/hoek": "9.x.x",
+    "@commercial/iron": "6.x.x",
+    "joi": "17.x.x"
   },
   "devDependencies": {
     "@hapi/code": "8.x.x",
@@ -30,5 +33,5 @@
     "test": "lab -a @hapi/code -t 100 -L",
     "test-cov-html": "lab -a @hapi/code -r html -o coverage.html"
   },
-  "license": "BSD-3-Clause"
+  "license": "SEE LICENSE IN LICENSE.md"
 }

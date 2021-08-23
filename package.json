@@ -13,6 +13,11 @@
     "cookies",
     "secure"
   ],
+  "eslintConfig": {
+    "extends": [
+      "plugin:@hapi/module"
+    ]
+  },
   "dependencies": {
     "@hapi/boom": "9.x.x",
     "@hapi/bounce": "2.x.x",
@@ -24,6 +29,7 @@
   },
   "devDependencies": {
     "@hapi/code": "8.x.x",
+    "@hapi/eslint-plugin": "*",
     "@hapi/lab": "24.x.x"
   },
   "scripts": {

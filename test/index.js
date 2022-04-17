@@ -83,6 +83,14 @@ describe('Definitions', () => {
             expect(states).to.equal({ a: '"1', b: '2', c: '3', 'd[1]': '4', '': '1' });
         });
 
+        it('parses cookie (none)', async () => {
+
+            const definitions = new Statehood.Definitions();
+            const { states, failed } = await definitions.parse('');
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({});
+        });
+
         it('parses cookie (empty)', async () => {
 
             const definitions = new Statehood.Definitions();
@@ -486,6 +494,29 @@ describe('Definitions', () => {
                         ignoreErrors: true
                     },
                     reason: 'Header contains unexpected syntax: ;'
+                }
+            ]);
+        });
+
+        it('fails parsing cookie (missing values, ignoring errors)', async () => {
+
+            const definitions = new Statehood.Definitions({ ignoreErrors: true });
+            const { states, failed } = await definitions.parse('a=1; b=2; c=3;qrs;tuv');
+            expect(states).to.equal({ a: '1', b: '2', c: '3' });
+            expect(failed).to.equal([
+                {
+                    settings: {
+                        isSecure: true,
+                        isHttpOnly: true,
+                        isSameSite: 'Strict',
+                        path: null,
+                        domain: null,
+                        ttl: null,
+                        encoding: 'none',
+                        strictHeader: true,
+                        ignoreErrors: true
+                    },
+                    reason: 'Header contains unexpected syntax: qrs;tuv'
                 }
             ]);
         });

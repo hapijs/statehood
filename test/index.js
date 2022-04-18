@@ -371,7 +371,7 @@ describe('Definitions', () => {
         it('ignores failed parsing cookie (mismatching quotes)', async () => {
 
             const definitions = new Statehood.Definitions({ ignoreErrors: true });
-            const { failed } = await definitions.parse('a="1; b="2"; c=3');
+            const { failed, states } = await definitions.parse('a="1; b="2"; c=3');
             expect(failed).to.equal([
                 {
                     name: 'a',
@@ -390,6 +390,34 @@ describe('Definitions', () => {
                     reason: 'Invalid cookie value'
                 }
             ]);
+
+            expect(states).to.equal({ b: '2', c: '3' });
+        });
+
+        it('ignores failed parsing cookie (lone quote)', async () => {
+
+            const definitions = new Statehood.Definitions({ ignoreErrors: true });
+            const { failed, states } = await definitions.parse('a="; b="2"; c=3');
+            expect(failed).to.equal([
+                {
+                    name: 'a',
+                    value: '"',
+                    settings: {
+                        isSecure: true,
+                        isHttpOnly: true,
+                        isSameSite: 'Strict',
+                        path: null,
+                        domain: null,
+                        ttl: null,
+                        encoding: 'none',
+                        strictHeader: true,
+                        ignoreErrors: true
+                    },
+                    reason: 'Invalid cookie value'
+                }
+            ]);
+
+            expect(states).to.equal({ b: '2', c: '3' });
         });
 
         it('ignores failed parsing cookie (cookie settings)', async () => {

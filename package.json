@@ -24,7 +24,7 @@
     "@hapi/bourne": "^3.0.0",
     "@hapi/cryptiles": "^6.0.0",
     "@hapi/hoek": "^10.0.0",
-    "@hapi/iron": "^6.0.0",
+    "@hapi/iron": "^7.0.0",
     "@hapi/validate": "^2.0.0"
   },
   "devDependencies": {

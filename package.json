@@ -4,6 +4,7 @@
   "version": "8.0.1",
   "repository": "git://github.com/hapijs/statehood",
   "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "files": [
     "lib"
   ],

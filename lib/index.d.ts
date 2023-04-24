@@ -178,4 +178,4 @@ export function prepareValue(
   options: StateOptions<any>
 ): Promise<string>;
 
-export function exclude(cookies, excludes): string | Boom;
+export function exclude(cookies: string, excludes: string[]): string | Boom;

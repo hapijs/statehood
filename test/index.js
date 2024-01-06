@@ -1,8 +1,8 @@
 'use strict';
 
 const Code = require('code');
-const Cryptiles = require('@commercial/cryptiles');
-const Iron = require('@commercial/iron');
+const Cryptiles = require('cryptiles');
+const Iron = require('iron');
 const Lab = require('lab');
 const Statehood = require('../');
 

@@ -39,6 +39,7 @@ describe('Definitions', () => {
                 isSecure: true,
                 isHttpOnly: true,
                 isSameSite: 'Strict',
+                isPartitioned: false,
                 path: null,
                 domain: null,
                 ttl: null,
@@ -354,6 +355,7 @@ describe('Definitions', () => {
                         isSecure: true,
                         isHttpOnly: true,
                         isSameSite: 'Strict',
+                        isPartitioned: false,
                         path: null,
                         domain: null,
                         ttl: null,
@@ -381,6 +383,7 @@ describe('Definitions', () => {
                         isSecure: true,
                         isHttpOnly: true,
                         isSameSite: 'Strict',
+                        isPartitioned: false,
                         path: null,
                         domain: null,
                         ttl: null,
@@ -408,6 +411,7 @@ describe('Definitions', () => {
                         isSecure: true,
                         isHttpOnly: true,
                         isSameSite: 'Strict',
+                        isPartitioned: false,
                         path: null,
                         domain: null,
                         ttl: null,
@@ -424,6 +428,7 @@ describe('Definitions', () => {
                         isSecure: true,
                         isHttpOnly: true,
                         isSameSite: 'Strict',
+                        isPartitioned: false,
                         path: null,
                         domain: null,
                         ttl: null,
@@ -447,6 +452,7 @@ describe('Definitions', () => {
                         isSecure: true,
                         isHttpOnly: true,
                         isSameSite: 'Strict',
+                        isPartitioned: false,
                         path: null,
                         domain: null,
                         ttl: null,
@@ -478,6 +484,7 @@ describe('Definitions', () => {
                         isSecure: true,
                         isHttpOnly: true,
                         isSameSite: 'Strict',
+                        isPartitioned: false,
                         path: null,
                         domain: null,
                         ttl: null,
@@ -502,6 +509,7 @@ describe('Definitions', () => {
                         isSecure: true,
                         isHttpOnly: true,
                         isSameSite: 'Strict',
+                        isPartitioned: false,
                         path: null,
                         domain: null,
                         ttl: null,
@@ -518,6 +526,7 @@ describe('Definitions', () => {
                         isSecure: true,
                         isHttpOnly: true,
                         isSameSite: 'Strict',
+                        isPartitioned: false,
                         path: null,
                         domain: null,
                         ttl: null,
@@ -553,6 +562,7 @@ describe('Definitions', () => {
                         isSecure: true,
                         isHttpOnly: true,
                         isSameSite: 'Strict',
+                        isPartitioned: false,
                         path: null,
                         domain: null,
                         ttl: null,
@@ -576,6 +586,7 @@ describe('Definitions', () => {
                         isSecure: true,
                         isHttpOnly: true,
                         isSameSite: 'Strict',
+                        isPartitioned: false,
                         path: null,
                         domain: null,
                         ttl: null,
@@ -603,6 +614,7 @@ describe('Definitions', () => {
                         isSecure: true,
                         isHttpOnly: true,
                         isSameSite: 'Strict',
+                        isPartitioned: false,
                         path: null,
                         domain: null,
                         ttl: null,
@@ -1034,6 +1046,14 @@ describe('Definitions', () => {
             const definitions = new Statehood.Definitions();
             await expect(definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: 'd', domain: 'example.com' } })).to.reject('Invalid cookie path: d');
         });
+
+        it('formats a header with cookie partitioned', async () => {
+
+            const definitions = new Statehood.Definitions();
+            const header = await definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isPartitioned: true, isSecure: true, isHttpOnly: true, isSameSite: 'None' } });
+            expect(header[0]).to.equal('sid=fihfieuhr9384hf; Secure; HttpOnly; SameSite=None; Partitioned');
+        });
+
     });
 
     describe('passThrough()', () => {

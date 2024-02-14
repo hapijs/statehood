@@ -45,6 +45,11 @@ export interface StateOptions<HapiRequest> {
   isSameSite?: SameSitePolicy | undefined;
 
   /**
+   * Sets the `Partitioned` flag. For more information, please access https://developers.google.com/privacy-sandbox/3pcd/chips
+   */
+  isPartitioned?: boolean | undefined;
+
+  /**
    * The path scope.
    *
    * @default null (no path)

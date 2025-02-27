@@ -1059,22 +1059,22 @@ describe('Definitions', () => {
             it('throws error if partitioned option if not secure', async () => {
 
                 const definitions = new Statehood.Definitions();
-                const result = await definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isPartitioned: true, isSecure: false, isHttpOnly: true, isSameSite: 'None' } });
-                expect(result.message).to.equal('Partitioned cookies must be secure');
+                const err = await expect(definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isPartitioned: true, isSecure: false, isHttpOnly: true, isSameSite: 'None' } })).to.reject();
+                expect(err.message).to.equal('Partitioned cookies must be secure');
             });
 
             it('throws error if partitioned option if not SameSite=None', async () => {
 
                 const definitions = new Statehood.Definitions();
-                const result = await definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isPartitioned: true, isSecure: true, isHttpOnly: true, isSameSite: 'Lax' } });
-                expect(result.message).to.equal('Partitioned cookies must have SameSite=None');
+                const err = await expect(definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isPartitioned: true, isSecure: true, isHttpOnly: true, isSameSite: 'Lax' } })).to.reject();
+                expect(err.message).to.equal('Partitioned cookies must have SameSite=None');
             });
 
             it('throws error if partitioned option if not secure and not SameSite=None', async () => {
 
                 const definitions = new Statehood.Definitions();
-                const result = await definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isPartitioned: true, isSecure: false, isHttpOnly: true, isSameSite: 'Lax' } });
-                expect(result.message).to.equal('Partitioned cookies must be secure');
+                const err = await expect(definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isPartitioned: true, isSecure: false, isHttpOnly: true, isSameSite: 'Lax' } })).to.reject();
+                expect(err.message).to.equal('Partitioned cookies must be secure');
             });
         });
 

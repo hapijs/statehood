@@ -19,7 +19,7 @@ describe('import()', () => {
 
     it('exposes all methods and classes as named imports', () => {
 
-        expect(Object.keys(Statehood)).to.equal([
+        expect(Object.keys(Statehood).filter((k) => k !== 'module.exports')).to.equal([
             'Definitions',
             'default',
             'exclude',

@@ -1047,9 +1047,27 @@ describe('Definitions', () => {
             await expect(definitions.format({ name: 'sid', value: 'fihfieuhr9384hf', options: { isHttpOnly: false, path: 'd', domain: 'example.com' } })).to.reject('Invalid cookie path: d');
         });
 
-        it('formats httpOnly cookie with special characters in loose mode (regression test for #1866)', async () => {
+        it('formats httpOnly cookie with special characters in loose mode', async () => {
 
             const definitions = new Statehood.Definitions({ strictHeader: false });
+            const header = await definitions.format({
+                name: 'sessionId',
+                value: 'value;with;semicolons',
+                options: {
+                    isHttpOnly: true,
+                    isSecure: true,
+                    path: '/',
+                    domain: 'example.com'
+                }
+            });
+            expect(header[0]).to.include('sessionId=value;with;semicolons');
+            expect(header[0]).to.include('HttpOnly');
+            expect(header[0]).to.include('Secure');
+        });
+
+        it('formats httpOnly cookie with special characters in strict mode', async () => {
+
+            const definitions = new Statehood.Definitions({ strictHeader: true });
             const header = await definitions.format({
                 name: 'sessionId',
                 value: 'value;with;semicolons',

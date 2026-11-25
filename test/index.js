@@ -702,6 +702,23 @@ describe('Definitions', () => {
             await expect(definitions.parse('sid=a=1&b=2&c=3%20x; sid=a=1&b=2&c=3%20x')).to.not.reject();
         });
 
+        it('omits ignored duplicate cookie when every value fails (iron)', async () => {
+
+            const definitions = new Statehood.Definitions({ ignoreErrors: true });
+            definitions.add('sid', { encoding: 'iron', password });
+            const { states, failed } = await definitions.parse('sid=a; sid=b');
+            expect(states).to.equal({});
+            expect(failed).to.have.length(2);
+        });
+
+        it('omits duplicate cookie from error states when every value fails (iron)', async () => {
+
+            const definitions = new Statehood.Definitions();
+            definitions.add('sid', { encoding: 'iron', password });
+            const err = await expect(definitions.parse('sid=a; sid=b')).to.reject('Invalid cookie value');
+            expect(err.states).to.equal({});
+        });
+
         it('fails parsing cookie (signed form missing signature with sep)', async () => {
 
             const definitions = new Statehood.Definitions();

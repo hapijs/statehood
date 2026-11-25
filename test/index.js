@@ -740,6 +740,67 @@ describe('Definitions', () => {
             await expect(definitions.parse('sid=a=1&b=2&c=3%20x.2d75635d74c1a987f84f3ee7f3113b9a2ff71f89d6692b1089f19d5d11d140f8*-Ghc6WvkE55V-TzucCl0NVFmbijeCwgs5Hf5tAVbSUo')).to.reject('Invalid cookie value');
         });
 
+        it('parses cookie (signed none)', async () => {
+
+            const definitions = new Statehood.Definitions();
+            definitions.add('sid', { sign: { password } });
+            const signed = await Statehood.prepareValue('sid', 'abc', { encoding: 'none', sign: { password } });
+            const { states, failed } = await definitions.parse(`sid=${signed}`);
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ sid: 'abc' });
+        });
+
+        it('parses cookie (signed none array)', async () => {
+
+            const definitions = new Statehood.Definitions();
+            definitions.add('sid', { sign: { password } });
+            const a = await Statehood.prepareValue('sid', 'a', { encoding: 'none', sign: { password } });
+            const b = await Statehood.prepareValue('sid', 'b', { encoding: 'none', sign: { password } });
+            const { states, failed } = await definitions.parse(`sid=${a}; sid=${b}`);
+            expect(failed).to.have.length(0);
+            expect(states).to.equal({ sid: ['a', 'b'] });
+        });
+
+        it('fails parsing cookie (signed none missing signature)', async () => {
+
+            const definitions = new Statehood.Definitions();
+            definitions.add('sid', { sign: { password } });
+            await expect(definitions.parse('sid=forged')).to.reject('Invalid cookie value');
+        });
+
+        it('fails parsing cookie (signed none wrong signature)', async () => {
+
+            const definitions = new Statehood.Definitions();
+            definitions.add('sid', { sign: { password } });
+            const signed = await Statehood.prepareValue('sid', 'abc', { encoding: 'none', sign: { password } });
+            await expect(definitions.parse(`sid=forged${signed.slice(3)}`)).to.reject('Invalid cookie value');
+        });
+
+        it('fails parsing cookie (signed none array with one forged)', async () => {
+
+            const definitions = new Statehood.Definitions();
+            definitions.add('sid', { sign: { password } });
+            const signed = await Statehood.prepareValue('sid', 'a', { encoding: 'none', sign: { password } });
+            const err = await expect(definitions.parse(`sid=${signed}; sid=forged`)).to.reject('Invalid cookie value');
+            expect(err.failed).to.have.length(1);
+            expect(err.states).to.equal({ sid: ['a'] });
+        });
+
+        it('ignores failed parsing cookie (signed none missing signature)', async () => {
+
+            const definitions = new Statehood.Definitions();
+            definitions.add('sid', { sign: { password }, ignoreErrors: true });
+            const { states, failed } = await definitions.parse('sid=forged');
+            expect(failed).to.have.length(1);
+            expect(states).to.equal({});
+        });
+
+        it('fails parsing unknown cookie (signed none server default)', async () => {
+
+            const definitions = new Statehood.Definitions({ sign: { password } });
+            await expect(definitions.parse('a=b')).to.reject('Invalid cookie value');
+        });
+
         it('errors on __proto__ cookie', async () => {
 
             const definitions = new Statehood.Definitions();
